@@ -1,199 +1,286 @@
-"use client";
-import ImageCarousel from "@/components/carousel";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { FaMapMarkerAlt, FaStar, FaUsers } from "react-icons/fa";
+import Link from "next/link"
+import { ArrowRight, MapPin, Star, Users } from "lucide-react"
 
-export default function HomePage() {
-  const [destination, setDestination] = useState("Gakenke, Ruli");
-  const [startDate, setStartDate] = useState("2025-04-15");
-  const [endDate, setEndDate] = useState("2025-04-15");
-  const [people, setPeople] = useState(2);
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
-  const places = [
-    {
-      id: 1,
-      name: "Mount Buzinganjwili",
-      location: "Gakenke, Ruli",
-      rating: 5,
-      price: "8000 RFW",
-      imageUrl: "/hills.jpg",
-    },
-    {
-      id: 2,
-      name: "Mount Buzinganjwili",
-      location: "Gakenke, Ruli",
-      rating: 5,
-      price: "8000 RFW",
-      imageUrl: "/hills.jpg",
-    },
-    {
-      id: 3,
-      name: "Mount Buzinganjwili",
-      location: "Gakenke, Ruli",
-      rating: 5,
-      price: "8000 RFW",
-      imageUrl: "/hills.jpg",
-    },
-    {
-      id: 4,
-      name: "Mount Buzinganjwili",
-      location: "Gakenke, Ruli",
-      rating: 5,
-      price: "8000 RFW",
-      imageUrl: "/hills.jpg",
-    },
-  ];
-
+export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navbar */}
-      <nav className="flex justify-between items-center p-4 shadow-md">
-        <h1 className="text-xl font-bold text-green-600 italic">
-          Trek <span className="font-semibold">Gems</span>
-        </h1>
-        <div className="space-x-6">
-          <Link href="/" className="font-medium">
-            Home
-          </Link>
-          <Link href="/explore" className="font-medium">
-            Explore
-          </Link>
-          <Link href="/tours" className="font-medium">
-            Tours
-          </Link>
-          <Link href="/signin" className="font-medium">
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="bg-green-500 text-white px-4 py-2 rounded-full"
-          >
-            Sign Up
-          </Link>
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <section className="relative w-full h-[600px] flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/60 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/placeholder.svg?height=600&width=1200')" }}
+        />
+        <div className="relative z-20 container mx-auto px-4 text-center text-white">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">Discover Rwanda's Hidden Gems</h1>
+          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+            Connect with authentic experiences in Rwanda's rural areas, supporting local communities while creating
+            unforgettable memories.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+              <Link href="/tours">
+                Explore Tours <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-transparent text-white border-white hover:bg-white/10"
+              asChild
+            >
+              <Link href="/about">Learn More</Link>
+            </Button>
+          </div>
         </div>
-      </nav>
-      {/* Hero Image */}
-      <div className="relative w-full ">
-        <div className=" w-full h-72">
-          <Image
-            src="/hills.jpg"
-            alt="Scenic View"
-            layout="fill"
-            objectFit="cover"
-          />
-        </div>
+      </section>
 
-        <div className=" absolute bottom-[-20px]  w-full flex justify-center mt-4">
-          <div className="bg-white shadow-md rounded-lg p-4 flex space-x-4">
-            <div className="flex items-center space-x-2">
-              <FaMapMarkerAlt className="text-green-500" />
-              <span>{destination}</span>
+      {/* Featured Tours */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">Featured Hidden Gems</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Explore these carefully selected experiences that showcase Rwanda's natural beauty and cultural richness
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredTours.map((tour) => (
+              <Card key={tour.id} className="overflow-hidden transition-all hover:shadow-lg border border-gray-200">
+                <div className="relative h-48 w-full">
+                  <img src={tour.image || "/placeholder.svg"} alt={tour.title} className="object-cover w-full h-full" />
+                  <div className="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded-md text-sm font-medium">
+                    ${tour.price}
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle className="text-gray-900">{tour.title}</CardTitle>
+                  <CardDescription className="flex items-center text-gray-600">
+                    <MapPin className="h-4 w-4 mr-1" /> {tour.location}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="line-clamp-3 text-gray-700">{tour.description}</p>
+                  <div className="flex items-center mt-4">
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                      <span className="ml-1 text-sm font-medium">{tour.rating}</span>
+                    </div>
+                    <div className="flex items-center ml-4">
+                      <Users className="h-4 w-4 text-gray-500" />
+                      <span className="ml-1 text-sm text-gray-500">{tour.bookings}+ bookings</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full bg-primary hover:bg-primary/90">
+                    <Link href={`/tours/${tour.id}`}>View Details</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10" asChild>
+              <Link href="/tours">
+                View All Tours <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Section */}
+      <section className="py-16 bg-[#f8f9fa]">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl font-bold mb-4 text-gray-900">Making a Positive Impact</h2>
+              <p className="text-gray-600 mb-6">
+                When you book with Trek-Gems, you're directly contributing to local communities and sustainable
+                development.
+              </p>
+              <ul className="space-y-4">
+                {impactPoints.map((point, index) => (
+                  <li key={index} className="flex">
+                    <div className="bg-primary/10 p-2 rounded-full mr-4">{point.icon}</div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">{point.title}</h3>
+                      <p className="text-gray-600">{point.description}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <Button className="mt-8 bg-primary hover:bg-primary/90" asChild>
+                <Link href="/impact">Learn About Our Impact</Link>
+              </Button>
             </div>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="border px-2 py-1 rounded"
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="border px-2 py-1 rounded"
-            />
-            <div className="flex items-center space-x-2">
-              <FaUsers className="text-green-500" />
-              <span>{people} people</span>
+            <div className="relative h-[400px] rounded-lg overflow-hidden">
+              <img
+                src="/placeholder.svg?height=400&width=600"
+                alt="Local community members benefiting from tourism"
+                className="object-cover w-full h-full"
+              />
             </div>
           </div>
         </div>
-      </div>
-      {/* Search/Filter Section */}
-      <div className="p-8">
-        <ImageCarousel />
-      </div>
-      {/* Popular Gem Places */}
-      <div>
-        <div className="container mx-auto px-4 my-12">
-          <h2 className="text-3xl font-bold text-green-600 py-14">
-            Popular Gem Places
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {places.map((place) => (
-              <div key={place.id} className="bg-white shadow-md rounded-xl p-4">
-                <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                  <Image
-                    src={place.imageUrl}
-                    alt={place.name}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-                <div className="mt-4 text-center">
-                  <h3 className="text-lg font-semibold">{place.name}</h3>
-                  <p className="text-gray-500 flex items-center justify-center gap-1">
-                    <FaMapMarkerAlt className="text-green-500" />
-                    {place.location}
-                  </p>
-                  <div className="flex justify-center mt-2 text-yellow-400">
-                    {Array.from({ length: place.rating }).map((_, index) => (
-                      <FaStar key={index} />
-                    ))}
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">What Travelers Say</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Hear from travelers who have experienced Rwanda's hidden gems firsthand
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="bg-[#f8f9fa] border border-gray-200">
+                <CardHeader>
+                  <div className="flex items-center">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${i < testimonial.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="italic text-gray-700">"{testimonial.comment}"</p>
+                </CardContent>
+                <CardFooter>
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
+                      <img
+                        src={testimonial.avatar || "/placeholder.svg"}
+                        alt={testimonial.name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{testimonial.name}</p>
+                      <p className="text-sm text-gray-600">{testimonial.from}</p>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
             ))}
           </div>
         </div>
-      </div>
-      {/* Explore More */}
+      </section>
 
-      <div className="container mx-auto px-4 py-10 my-12">
-        {/* Title */}
-        <h2 className="text-3xl font-bold text-green-600  mb-6">
-          Explore more
-        </h2>
-
-        {/* Places Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {places.map((place) => (
-            <div
-              key={place.id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden"
-            >
-              {/* Image */}
-              <div className="relative w-full h-60">
-                <Image
-                  src={place.imageUrl}
-                  alt={place.name}
-                  layout="fill"
-                  objectFit="cover"
-                />
-              </div>
-
-              {/* Details */}
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">{place.name}</h3>
-                <div className="flex items-center text-gray-600 text-sm">
-                  <FaMapMarkerAlt className="text-green-500 mr-2" />
-                  <span>{place.location}</span>
-                </div>
-                <div className="mt-2 flex justify-between items-center">
-                  <span className="text-gray-900 font-bold">{place.price}</span>
-                  {/* Rating */}
-                  <div className="flex text-yellow-500">
-                    {Array.from({ length: place.rating }).map((_, i) => (
-                      <FaStar key={i} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* CTA Section */}
+      <section className="py-16 bg-primary text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to Discover Rwanda's Hidden Gems?</h2>
+          <p className="max-w-2xl mx-auto mb-8">
+            Join us in promoting responsible tourism that benefits local communities while creating unforgettable
+            experiences.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" variant="secondary" className="bg-secondary hover:bg-secondary/90" asChild>
+              <Link href="/tours">Browse Tours</Link>
+            </Button>
+            <Button size="lg" variant="outline" className="bg-transparent border-white hover:bg-white/10" asChild>
+              <Link href="/register">Sign Up</Link>
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
-  );
+  )
 }
+
+// Sample data
+const featuredTours = [
+  {
+    id: 1,
+    title: "Lake Burera Cultural Experience",
+    location: "Northern Province",
+    description:
+      "Immerse yourself in the rich cultural heritage of communities surrounding Lake Burera. Learn traditional fishing techniques, participate in cultural dances, and enjoy authentic local cuisine.",
+    price: 89,
+    rating: 4.8,
+    bookings: 124,
+    image: "/placeholder.svg?height=200&width=300",
+  },
+  {
+    id: 2,
+    title: "Nyungwe Forest Canopy Walk",
+    location: "Western Province",
+    description:
+      "Experience the breathtaking biodiversity of Nyungwe Forest from a unique perspective. Walk among the treetops on a canopy walkway and spot rare primates and birds in their natural habitat.",
+    price: 120,
+    rating: 4.9,
+    bookings: 256,
+    image: "/placeholder.svg?height=200&width=300",
+  },
+  {
+    id: 3,
+    title: "Iby'Iwacu Cultural Village",
+    location: "Northern Province",
+    description:
+      "Visit a traditional Rwandan village where former poachers now showcase their cultural heritage. Learn about traditional medicine, archery, and dance while supporting conservation efforts.",
+    price: 75,
+    rating: 4.7,
+    bookings: 189,
+    image: "/placeholder.svg?height=200&width=300",
+  },
+]
+
+const impactPoints = [
+  {
+    icon: <Users className="h-5 w-5 text-primary" />,
+    title: "Community Employment",
+    description: "We've created over 200 jobs for local community members across Rwanda.",
+  },
+  {
+    icon: <MapPin className="h-5 w-5 text-primary" />,
+    title: "Rural Development",
+    description: "Tourism revenue has helped build schools and healthcare facilities in rural areas.",
+  },
+  {
+    icon: <Star className="h-5 w-5 text-primary" />,
+    title: "Cultural Preservation",
+    description: "Our tours help preserve and celebrate Rwanda's rich cultural heritage.",
+  },
+]
+
+const testimonials = [
+  {
+    name: "Sarah Johnson",
+    from: "United States",
+    rating: 5,
+    comment:
+      "My experience with Trek-Gems was truly life-changing. The local guides were knowledgeable and passionate, and I felt like I was making a positive impact.",
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    name: "David Chen",
+    from: "Singapore",
+    rating: 5,
+    comment:
+      "The authenticity of these experiences is unmatched. I've traveled to many places, but the connection with local communities here was something special.",
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    name: "Maria Gonzalez",
+    from: "Spain",
+    rating: 4,
+    comment:
+      "Beautiful landscapes, warm people, and the knowledge that my tourism dollars were directly helping local communities made this trip unforgettable.",
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+]
+
