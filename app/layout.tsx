@@ -24,18 +24,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange> */}
         <AuthProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-          </div>
+          <NextAuthProvider>
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </div>
+          </NextAuthProvider>
         </AuthProvider>
-        {/* </ThemeProvider> */}
       </body>
     </html>
   );
 }
 
 import "./globals.css";
+import { SessionProvider } from "next-auth/react";
+import { NextAuthProvider } from "@/lib/auth-provider";

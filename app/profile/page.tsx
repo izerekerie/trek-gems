@@ -1,48 +1,56 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { ArrowLeft, Camera, Mail, MapPin, Phone } from "lucide-react"
+import { useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Camera, Mail, MapPin, Phone } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
-import { useAuth } from "@/lib/auth-context"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/lib/auth-context";
 
 export default function ProfilePage() {
-  const { user, isLoading } = useAuth()
-  const { toast } = useToast()
-  const router = useRouter()
+  const { user, isLoading } = useAuth();
+
+  const { toast } = useToast();
+  const router = useRouter();
 
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push("/login")
+      router.push("/login");
     }
-  }, [user, isLoading, router])
+  }, [user, isLoading, router]);
 
   const handleSaveProfile = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     toast({
       title: "Profile updated!",
       description: "Your profile has been updated successfully.",
-    })
-  }
+    });
+  };
 
   const handleSavePassword = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     toast({
       title: "Password updated!",
       description: "Your password has been updated successfully.",
-    })
-  }
+    });
+  };
 
   // Show loading or redirect if not authenticated
   if (isLoading || !user) {
@@ -50,12 +58,15 @@ export default function ProfilePage() {
       <div className="container mx-auto py-8 px-4 text-center">
         <p>Loading...</p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="container max-w-4xl mx-auto py-12 px-4">
-      <Link href="/dashboard" className="flex items-center text-sm mb-6 text-gray-600 hover:text-primary">
+      <Link
+        href="/dashboard"
+        className="flex items-center text-sm mb-6 text-gray-600 hover:text-primary"
+      >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to dashboard
       </Link>
@@ -77,10 +88,14 @@ export default function ProfilePage() {
           <h1 className="text-2xl font-bold mt-4 text-gray-900">
             {user.firstName} {user.lastName}
           </h1>
-          <p className="text-gray-600">{user.role === "traveler" ? "Traveler" : "Tour Guide"}</p>
+          <p className="text-gray-600">
+            {user.role === "traveler" ? "Traveler" : "Tour Guide"}
+          </p>
           <div className="flex items-center mt-2 text-gray-600">
             <MapPin className="h-4 w-4 mr-1" />
-            <span className="text-sm">{user.address || "No address provided"}</span>
+            <span className="text-sm">
+              {user.address || "No address provided"}
+            </span>
           </div>
           <div className="mt-6 w-full">
             <Card>
@@ -94,7 +109,9 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-4 w-4 mr-2 text-gray-500" />
-                  <span className="text-gray-700">{user.phone || "No phone provided"}</span>
+                  <span className="text-gray-700">
+                    {user.phone || "No phone provided"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -113,7 +130,9 @@ export default function ProfilePage() {
                 <form onSubmit={handleSaveProfile}>
                   <CardHeader>
                     <CardTitle>Profile Information</CardTitle>
-                    <CardDescription>Update your personal information</CardDescription>
+                    <CardDescription>
+                      Update your personal information
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -121,13 +140,21 @@ export default function ProfilePage() {
                         <Label htmlFor="first-name" className="text-gray-700">
                           First name
                         </Label>
-                        <Input id="first-name" defaultValue={user.firstName} className="border-gray-300" />
+                        <Input
+                          id="first-name"
+                          defaultValue={user.firstName}
+                          className="border-gray-300"
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="last-name" className="text-gray-700">
                           Last name
                         </Label>
-                        <Input id="last-name" defaultValue={user.lastName} className="border-gray-300" />
+                        <Input
+                          id="last-name"
+                          defaultValue={user.lastName}
+                          className="border-gray-300"
+                        />
                       </div>
                     </div>
 
@@ -135,21 +162,34 @@ export default function ProfilePage() {
                       <Label htmlFor="email" className="text-gray-700">
                         Email
                       </Label>
-                      <Input id="email" type="email" defaultValue={user.email} className="border-gray-300" />
+                      <Input
+                        id="email"
+                        type="email"
+                        defaultValue={user.email}
+                        className="border-gray-300"
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="phone" className="text-gray-700">
                         Phone
                       </Label>
-                      <Input id="phone" defaultValue={user.phone || ""} className="border-gray-300" />
+                      <Input
+                        id="phone"
+                        defaultValue={user.phone || ""}
+                        className="border-gray-300"
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="address" className="text-gray-700">
                         Address
                       </Label>
-                      <Input id="address" defaultValue={user.address || ""} className="border-gray-300" />
+                      <Input
+                        id="address"
+                        defaultValue={user.address || ""}
+                        className="border-gray-300"
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -165,7 +205,10 @@ export default function ProfilePage() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button type="submit" className="bg-primary hover:bg-primary/90">
+                    <Button
+                      type="submit"
+                      className="bg-primary hover:bg-primary/90"
+                    >
                       Save Changes
                     </Button>
                   </CardFooter>
@@ -182,28 +225,49 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="current-password" className="text-gray-700">
+                      <Label
+                        htmlFor="current-password"
+                        className="text-gray-700"
+                      >
                         Current Password
                       </Label>
-                      <Input id="current-password" type="password" className="border-gray-300" />
+                      <Input
+                        id="current-password"
+                        type="password"
+                        className="border-gray-300"
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="new-password" className="text-gray-700">
                         New Password
                       </Label>
-                      <Input id="new-password" type="password" className="border-gray-300" />
+                      <Input
+                        id="new-password"
+                        type="password"
+                        className="border-gray-300"
+                      />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirm-password" className="text-gray-700">
+                      <Label
+                        htmlFor="confirm-password"
+                        className="text-gray-700"
+                      >
                         Confirm New Password
                       </Label>
-                      <Input id="confirm-password" type="password" className="border-gray-300" />
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        className="border-gray-300"
+                      />
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button type="submit" className="bg-primary hover:bg-primary/90">
+                    <Button
+                      type="submit"
+                      className="bg-primary hover:bg-primary/90"
+                    >
                       Update Password
                     </Button>
                   </CardFooter>
@@ -214,6 +278,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
