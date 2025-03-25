@@ -16,7 +16,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useSession, signOut } from "next-auth/react";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -35,8 +34,7 @@ const languages = [
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, logout } = useAuth();
-  const { data: session, status } = useSession();
+  const { user, isAuthenticated, logout } = useAuth();
   return (
     <header className="bg-white border-b border-gray-200">
       <nav
@@ -104,7 +102,7 @@ export default function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {session || user ? (
+          {isAuthenticated || user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -113,10 +111,10 @@ export default function Navbar() {
                   className="flex items-center gap-2"
                 >
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src={user?.avatar} alt={user?.firstName} />
-                    <AvatarFallback>{user?.firstName.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={user?.avatar} alt={user?.username} />
+                    <AvatarFallback>{user?.username.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <span>{user?.firstName}</span>
+                  <span>{user?.username}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -132,7 +130,7 @@ export default function Navbar() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => signOut({ redirect: true })}
+                  onClick={() => logout()}
                   className="text-red-600"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
@@ -234,22 +232,20 @@ export default function Navbar() {
                   ))}
                 </div>
                 <div className="mt-6 flex flex-col gap-4">
-                  {status === "authenticated" ? (
+                  {isAuthenticated == true ? (
                     <>
                       <div className="flex items-center gap-2 px-2 py-1">
                         <Avatar className="h-8 w-8">
                           <AvatarImage
                             src={user?.avatar}
-                            alt={user?.firstName}
+                            alt={user?.username}
                           />
                           <AvatarFallback>
-                            {user?.firstName.charAt(0)}
+                            {user?.username.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium">
-                            {user?.firstName} {user?.lastName}
-                          </div>
+                          <div className="font-medium">{user?.username}</div>
                           <div className="text-sm text-gray-500">
                             {user?.email}
                           </div>
@@ -282,7 +278,7 @@ export default function Navbar() {
                       <Button
                         className="w-full bg-red-600 hover:bg-red-700 text-white"
                         onClick={() => {
-                          signOut({ redirect: true });
+                          logout();
                           setMobileMenuOpen(false);
                         }}
                       >

@@ -22,7 +22,7 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { login, isLoading } = useAuth();
+  const { login, loading, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -37,24 +37,15 @@ export default function Login() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Form data", formData);
+    clearError();
+
     try {
-      const res = await signIn("credentials", {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
-      });
-      if (!res?.error) {
-        toast({
-          title: "Logged in",
-          description: "You have successfully logged in",
-        });
-        router.push("/welcome");
-      }
+      await login(formData.email, formData.password);
+      toast({ title: "Loggen In", description: "Logged in successfully" });
+      router.push("/dashboard");
     } catch (error) {
-      setFormData({
-        ...formData,
-        error: error,
-      });
+      // Error is handled by context
     }
   };
   return (
@@ -137,9 +128,9 @@ export default function Login() {
           <Button
             type="submit"
             className="w-full bg-primary hover:bg-primary/90"
-            disabled={isLoading}
+            disabled={loading}
           >
-            {isLoading ? "Logging in..." : "Log In"}
+            {loading ? "Logging in..." : "Log In"}
           </Button>
         </form>
 

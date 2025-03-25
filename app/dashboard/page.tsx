@@ -1,35 +1,49 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Calendar, DollarSign, MapPin, Package, Plus, Star } from "lucide-react"
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Calendar,
+  DollarSign,
+  MapPin,
+  Package,
+  Plus,
+  Star,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/lib/auth-context"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Dashboard() {
-  const { user, isLoading } = useAuth()
-  const router = useRouter()
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login")
+    if (!user) {
+      router.push("/login");
     }
-  }, [user, isLoading, router])
+  }, [user, loading, router]);
 
   // Show loading or redirect if not authenticated
-  if (isLoading || !user) {
+  if (loading || !user) {
     return (
       <div className="container mx-auto py-8 px-4 text-center">
         <p>Loading...</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -37,14 +51,18 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold mb-2 text-gray-900">
-            {user.role === "traveler" ? "Traveler Dashboard" : "Tour Guide Dashboard"}
+            {user.role === "TRAVELER"
+              ? "Traveler Dashboard"
+              : "Tour Guide Dashboard"}
           </h1>
           <p className="text-gray-600">
-            Welcome back, {user.firstName}!{" "}
-            {user.role === "traveler" ? "Manage your bookings and favorite tours" : "Manage your tours and bookings"}
+            Welcome back, {user.username}!{" "}
+            {user.role === "TRAVELER"
+              ? "Manage your bookings and favorite tours"
+              : "Manage your tours and bookings"}
           </p>
         </div>
-        {user.role === "guide" && (
+        {user.role === "OPERATOR" && (
           <Button asChild className="bg-primary hover:bg-primary/90">
             <Link href="/tours/create">
               <Plus className="mr-2 h-4 w-4" /> Create New Tour
@@ -53,9 +71,9 @@ export default function Dashboard() {
         )}
       </div>
 
-      {user.role === "traveler" ? <TravelerDashboard /> : <GuideDashboard />}
+      {user.role === "TRAVELER" ? <TravelerDashboard /> : <GuideDashboard />}
     </div>
-  )
+  );
 }
 
 function TravelerDashboard() {
@@ -64,7 +82,9 @@ function TravelerDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Upcoming Trips</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Upcoming Trips
+            </CardTitle>
             <Calendar className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -74,7 +94,9 @@ function TravelerDashboard() {
         </Card>
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Total Spent</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Total Spent
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -84,7 +106,9 @@ function TravelerDashboard() {
         </Card>
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Saved Tours</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Saved Tours
+            </CardTitle>
             <Star className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -94,7 +118,9 @@ function TravelerDashboard() {
         </Card>
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Reviews Given</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Reviews Given
+            </CardTitle>
             <Star className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -114,8 +140,12 @@ function TravelerDashboard() {
         <TabsContent value="upcoming" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Upcoming Trips</CardTitle>
-              <CardDescription>Your scheduled tours and experiences</CardDescription>
+              <CardTitle className="text-xl text-gray-900">
+                Upcoming Trips
+              </CardTitle>
+              <CardDescription>
+                Your scheduled tours and experiences
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -133,11 +163,17 @@ function TravelerDashboard() {
                         />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{trip.tour}</div>
+                        <div className="font-medium text-gray-900">
+                          {trip.tour}
+                        </div>
                         <div className="text-sm text-gray-600">{trip.date}</div>
                         <div className="flex items-center mt-1">
                           <Badge
-                            variant={trip.status === "Confirmed" ? "default" : "outline"}
+                            variant={
+                              trip.status === "Confirmed"
+                                ? "default"
+                                : "outline"
+                            }
                             className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
                           >
                             {trip.status}
@@ -146,8 +182,12 @@ function TravelerDashboard() {
                       </div>
                     </div>
                     <div className="flex flex-col items-end">
-                      <div className="font-medium text-gray-900">${trip.amount}</div>
-                      <div className="text-sm text-gray-600">{trip.guests} guests</div>
+                      <div className="font-medium text-gray-900">
+                        ${trip.amount}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {trip.guests} guests
+                      </div>
                       <Button
                         variant="outline"
                         size="sm"
@@ -161,7 +201,11 @@ function TravelerDashboard() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" asChild>
+              <Button
+                variant="outline"
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                asChild
+              >
                 <Link href="/bookings">View All Bookings</Link>
               </Button>
             </CardFooter>
@@ -171,8 +215,12 @@ function TravelerDashboard() {
         <TabsContent value="past" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Past Trips</CardTitle>
-              <CardDescription>Your completed tours and experiences</CardDescription>
+              <CardTitle className="text-xl text-gray-900">
+                Past Trips
+              </CardTitle>
+              <CardDescription>
+                Your completed tours and experiences
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -190,7 +238,9 @@ function TravelerDashboard() {
                         />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{trip.tour}</div>
+                        <div className="font-medium text-gray-900">
+                          {trip.tour}
+                        </div>
                         <div className="text-sm text-gray-600">{trip.date}</div>
                         <div className="flex mt-1">
                           {trip.reviewed ? (
@@ -198,10 +248,16 @@ function TravelerDashboard() {
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className={`h-3 w-3 ${i < trip.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                                  className={`h-3 w-3 ${
+                                    i < trip?.rating
+                                      ? "text-yellow-500 fill-yellow-500"
+                                      : "text-gray-300"
+                                  }`}
                                 />
                               ))}
-                              <span className="ml-1 text-xs text-gray-600">Your rating</span>
+                              <span className="ml-1 text-xs text-gray-600">
+                                Your rating
+                              </span>
                             </div>
                           ) : (
                             <Button
@@ -210,14 +266,18 @@ function TravelerDashboard() {
                               className="h-6 text-primary hover:bg-primary/10 px-2 py-0"
                               asChild
                             >
-                              <Link href={`/tours/${trip.id}/review`}>Write a Review</Link>
+                              <Link href={`/tours/${trip.id}/review`}>
+                                Write a Review
+                              </Link>
                             </Button>
                           )}
                         </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end">
-                      <div className="font-medium text-gray-900">${trip.amount}</div>
+                      <div className="font-medium text-gray-900">
+                        ${trip.amount}
+                      </div>
                       <Button
                         variant="outline"
                         size="sm"
@@ -236,13 +296,18 @@ function TravelerDashboard() {
         <TabsContent value="saved" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Saved Tours</CardTitle>
+              <CardTitle className="text-xl text-gray-900">
+                Saved Tours
+              </CardTitle>
               <CardDescription>Tours you've saved for later</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {savedTours.map((tour) => (
-                  <div key={tour.id} className="flex items-center border border-gray-200 rounded-md p-3">
+                  <div
+                    key={tour.id}
+                    className="flex items-center border border-gray-200 rounded-md p-3"
+                  >
                     <div className="w-16 h-16 rounded-md overflow-hidden mr-3">
                       <img
                         src={tour.image || "/placeholder.svg"}
@@ -251,7 +316,9 @@ function TravelerDashboard() {
                       />
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{tour.title}</div>
+                      <div className="font-medium text-gray-900">
+                        {tour.title}
+                      </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <MapPin className="h-3 w-3 mr-1" />
                         {tour.location}
@@ -274,7 +341,11 @@ function TravelerDashboard() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" asChild>
+              <Button
+                variant="outline"
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                asChild
+              >
                 <Link href="/tours">Explore More Tours</Link>
               </Button>
             </CardFooter>
@@ -282,7 +353,7 @@ function TravelerDashboard() {
         </TabsContent>
       </Tabs>
     </>
-  )
+  );
 }
 
 function GuideDashboard() {
@@ -291,7 +362,9 @@ function GuideDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Total Revenue
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -301,7 +374,9 @@ function GuideDashboard() {
         </Card>
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Total Bookings</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Total Bookings
+            </CardTitle>
             <Calendar className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -311,7 +386,9 @@ function GuideDashboard() {
         </Card>
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Active Tours</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Active Tours
+            </CardTitle>
             <Package className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -321,7 +398,9 @@ function GuideDashboard() {
         </Card>
         <Card className="border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Average Rating</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              Average Rating
+            </CardTitle>
             <Star className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
@@ -343,33 +422,55 @@ function GuideDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="border border-gray-200">
               <CardHeader>
-                <CardTitle className="text-xl text-gray-900">Recent Bookings</CardTitle>
-                <CardDescription>You have 12 bookings this week</CardDescription>
+                <CardTitle className="text-xl text-gray-900">
+                  Recent Bookings
+                </CardTitle>
+                <CardDescription>
+                  You have 12 bookings this week
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {recentBookings.map((booking) => (
-                    <div key={booking.id} className="flex items-center justify-between">
+                    <div
+                      key={booking.id}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center">
                         <Avatar className="h-9 w-9 mr-3">
-                          <AvatarImage src={booking.avatar} alt={booking.name} />
-                          <AvatarFallback>{booking.name.charAt(0)}</AvatarFallback>
+                          <AvatarImage
+                            src={booking.avatar}
+                            alt={booking.name}
+                          />
+                          <AvatarFallback>
+                            {booking.name.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium text-gray-900">{booking.name}</div>
-                          <div className="text-sm text-gray-600">{booking.tour}</div>
+                          <div className="font-medium text-gray-900">
+                            {booking.name}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {booking.tour}
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
                         <div className="text-gray-900">${booking.amount}</div>
-                        <div className="text-sm text-gray-600">{booking.date}</div>
+                        <div className="text-sm text-gray-600">
+                          {booking.date}
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                  asChild
+                >
                   <Link href="/bookings">View All Bookings</Link>
                 </Button>
               </CardFooter>
@@ -377,8 +478,12 @@ function GuideDashboard() {
 
             <Card className="border border-gray-200">
               <CardHeader>
-                <CardTitle className="text-xl text-gray-900">Popular Tours</CardTitle>
-                <CardDescription>Your most booked tours this month</CardDescription>
+                <CardTitle className="text-xl text-gray-900">
+                  Popular Tours
+                </CardTitle>
+                <CardDescription>
+                  Your most booked tours this month
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -392,7 +497,9 @@ function GuideDashboard() {
                         />
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">{tour.title}</div>
+                        <div className="font-medium text-gray-900">
+                          {tour.title}
+                        </div>
                         <div className="flex items-center text-sm text-gray-600">
                           <MapPin className="h-3 w-3 mr-1" />
                           {tour.location}
@@ -403,14 +510,20 @@ function GuideDashboard() {
                           <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
                           <span className="text-gray-900">{tour.rating}</span>
                         </div>
-                        <div className="text-sm text-gray-600">{tour.bookings} bookings</div>
+                        <div className="text-sm text-gray-600">
+                          {tour.bookings} bookings
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                  asChild
+                >
                   <Link href="/tours">View All Tours</Link>
                 </Button>
               </CardFooter>
@@ -419,13 +532,20 @@ function GuideDashboard() {
 
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Upcoming Check-ins</CardTitle>
-              <CardDescription>Guests arriving in the next 7 days</CardDescription>
+              <CardTitle className="text-xl text-gray-900">
+                Upcoming Check-ins
+              </CardTitle>
+              <CardDescription>
+                Guests arriving in the next 7 days
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {upcomingCheckins.map((checkin) => (
-                  <div key={checkin.id} className="flex items-center justify-between">
+                  <div
+                    key={checkin.id}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center">
                       <div className="w-12 h-12 rounded-md overflow-hidden mr-3">
                         <img
@@ -435,7 +555,9 @@ function GuideDashboard() {
                         />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{checkin.tour}</div>
+                        <div className="font-medium text-gray-900">
+                          {checkin.tour}
+                        </div>
                         <div className="text-sm text-gray-600">
                           {checkin.date}, {checkin.time}
                         </div>
@@ -443,11 +565,17 @@ function GuideDashboard() {
                     </div>
                     <div className="flex items-center">
                       <div className="mr-4">
-                        <div className="font-medium text-gray-900">{checkin.guestName}</div>
-                        <div className="text-sm text-gray-600">{checkin.guests} guests</div>
+                        <div className="font-medium text-gray-900">
+                          {checkin.guestName}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {checkin.guests} guests
+                        </div>
                       </div>
                       <Badge
-                        variant={checkin.status === "Confirmed" ? "default" : "outline"}
+                        variant={
+                          checkin.status === "Confirmed" ? "default" : "outline"
+                        }
                         className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
                       >
                         {checkin.status}
@@ -458,7 +586,11 @@ function GuideDashboard() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" asChild>
+              <Button
+                variant="outline"
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                asChild
+              >
                 <Link href="/checkins">View All Check-ins</Link>
               </Button>
             </CardFooter>
@@ -468,7 +600,9 @@ function GuideDashboard() {
         <TabsContent value="tours" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Your Tours</CardTitle>
+              <CardTitle className="text-xl text-gray-900">
+                Your Tours
+              </CardTitle>
               <CardDescription>Manage your tour listings</CardDescription>
             </CardHeader>
             <CardContent>
@@ -487,14 +621,18 @@ function GuideDashboard() {
                         />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{tour.title}</div>
+                        <div className="font-medium text-gray-900">
+                          {tour.title}
+                        </div>
                         <div className="flex items-center text-sm text-gray-600">
                           <MapPin className="h-3 w-3 mr-1" />
                           {tour.location}
                         </div>
                         <div className="flex items-center mt-1">
                           <Badge
-                            variant={tour.status === "Active" ? "default" : "secondary"}
+                            variant={
+                              tour.status === "Active" ? "default" : "secondary"
+                            }
                             className={
                               tour.status === "Active"
                                 ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
@@ -504,7 +642,9 @@ function GuideDashboard() {
                             {tour.status}
                           </Badge>
                           <span className="mx-2 text-gray-500">•</span>
-                          <span className="text-sm text-gray-600">${tour.price}</span>
+                          <span className="text-sm text-gray-600">
+                            ${tour.price}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -523,7 +663,9 @@ function GuideDashboard() {
                         className="border-gray-300 text-gray-700 hover:bg-gray-50"
                         asChild
                       >
-                        <Link href={`/tours/${tour.id}/bookings`}>Bookings</Link>
+                        <Link href={`/tours/${tour.id}/bookings`}>
+                          Bookings
+                        </Link>
                       </Button>
                     </div>
                   </div>
@@ -543,7 +685,9 @@ function GuideDashboard() {
         <TabsContent value="bookings" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Recent Bookings</CardTitle>
+              <CardTitle className="text-xl text-gray-900">
+                Recent Bookings
+              </CardTitle>
               <CardDescription>Manage your tour bookings</CardDescription>
             </CardHeader>
             <CardContent>
@@ -556,25 +700,33 @@ function GuideDashboard() {
                     <div className="flex items-center">
                       <Avatar className="h-10 w-10 mr-3">
                         <AvatarImage src={booking.avatar} alt={booking.name} />
-                        <AvatarFallback>{booking.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>
+                          {booking.name.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium text-gray-900">{booking.name}</div>
-                        <div className="text-sm text-gray-600">{booking.tour}</div>
+                        <div className="font-medium text-gray-900">
+                          {booking.name}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {booking.tour}
+                        </div>
                         <div className="text-sm text-gray-600">
                           {booking.date}, {booking.guests} guests
                         </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end">
-                      <div className="font-medium text-gray-900">${booking.amount}</div>
+                      <div className="font-medium text-gray-900">
+                        ${booking.amount}
+                      </div>
                       <Badge
                         variant={
                           booking.status === "Confirmed"
                             ? "default"
                             : booking.status === "Pending"
-                              ? "outline"
-                              : "destructive"
+                            ? "outline"
+                            : "destructive"
                         }
                         className={
                           booking.status === "Confirmed"
@@ -585,11 +737,18 @@ function GuideDashboard() {
                         {booking.status}
                       </Badge>
                       <div className="flex gap-2 mt-2">
-                        <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
                           Details
                         </Button>
                         {booking.status === "Pending" && (
-                          <Button size="sm" className="bg-primary hover:bg-primary/90">
+                          <Button
+                            size="sm"
+                            className="bg-primary hover:bg-primary/90"
+                          >
                             Confirm
                           </Button>
                         )}
@@ -605,13 +764,20 @@ function GuideDashboard() {
         <TabsContent value="reviews" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Recent Reviews</CardTitle>
-              <CardDescription>What travelers are saying about your tours</CardDescription>
+              <CardTitle className="text-xl text-gray-900">
+                Recent Reviews
+              </CardTitle>
+              <CardDescription>
+                What travelers are saying about your tours
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 {reviews.map((review) => (
-                  <div key={review.id} className="border-b border-gray-200 pb-6 last:border-0">
+                  <div
+                    key={review.id}
+                    className="border-b border-gray-200 pb-6 last:border-0"
+                  >
                     <div className="flex items-start">
                       <Avatar className="h-10 w-10 mr-3">
                         <AvatarImage src={review.avatar} alt={review.name} />
@@ -620,16 +786,26 @@ function GuideDashboard() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-gray-900">{review.name}</div>
-                            <div className="text-sm text-gray-600">{review.tour}</div>
+                            <div className="font-medium text-gray-900">
+                              {review.name}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {review.tour}
+                            </div>
                           </div>
-                          <div className="text-sm text-gray-600">{review.date}</div>
+                          <div className="text-sm text-gray-600">
+                            {review.date}
+                          </div>
                         </div>
                         <div className="flex mt-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`h-4 w-4 ${i < review.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                              className={`h-4 w-4 ${
+                                i < review.rating
+                                  ? "text-yellow-500 fill-yellow-500"
+                                  : "text-gray-300"
+                              }`}
                             />
                           ))}
                         </div>
@@ -645,8 +821,12 @@ function GuideDashboard() {
                         )}
                         {review.replied && (
                           <div className="mt-3 pl-4 border-l-2 border-gray-200">
-                            <div className="font-medium text-gray-900">Your response:</div>
-                            <p className="text-sm text-gray-600 mt-1">{review.reply}</p>
+                            <div className="font-medium text-gray-900">
+                              Your response:
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {review.reply}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -659,7 +839,7 @@ function GuideDashboard() {
         </TabsContent>
       </Tabs>
     </>
-  )
+  );
 }
 
 // Sample data for traveler dashboard
@@ -682,7 +862,7 @@ const upcomingTrips = [
     guests: 2,
     image: "/placeholder.svg?height=64&width=64",
   },
-]
+];
 
 const pastTrips = [
   {
@@ -711,7 +891,7 @@ const pastTrips = [
     reviewed: false,
     image: "/placeholder.svg?height=64&width=64",
   },
-]
+];
 
 const savedTours = [
   {
@@ -742,7 +922,7 @@ const savedTours = [
     price: 150,
     image: "/placeholder.svg?height=64&width=64",
   },
-]
+];
 
 // Sample data for guide dashboard
 const recentBookings = [
@@ -778,7 +958,7 @@ const recentBookings = [
     amount: 178,
     date: "May 14, 3:20 PM",
   },
-]
+];
 
 const popularTours = [
   {
@@ -805,7 +985,7 @@ const popularTours = [
     bookings: 86,
     image: "/placeholder.svg?height=48&width=48",
   },
-]
+];
 
 const upcomingCheckins = [
   {
@@ -838,7 +1018,7 @@ const upcomingCheckins = [
     guests: 3,
     status: "Pending",
   },
-]
+];
 
 const operatorTours = [
   {
@@ -873,7 +1053,7 @@ const operatorTours = [
     status: "Draft",
     image: "/placeholder.svg?height=64&width=64",
   },
-]
+];
 
 const allBookings = [
   {
@@ -916,7 +1096,7 @@ const allBookings = [
     amount: 178,
     status: "Cancelled",
   },
-]
+];
 
 const reviews = [
   {
@@ -956,5 +1136,4 @@ const reviews = [
     reply:
       "Thank you for your wonderful review, Emma! We're so glad you enjoyed the cultural demonstrations and activities. The community members always love sharing their traditions with visitors. We hope the rest of your time in Rwanda was just as memorable!",
   },
-]
-
+];
