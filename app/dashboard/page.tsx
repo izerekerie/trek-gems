@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -25,11 +25,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth-context";
+import TourModal from "@/components/tourForm";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
-
+  const [tourForm, setIsTourFormOPen] = useState(false);
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!user) {
@@ -63,15 +64,21 @@ export default function Dashboard() {
           </p>
         </div>
         {user.role === "OPERATOR" && (
-          <Button asChild className="bg-primary hover:bg-primary/90">
-            <Link href="/tours/create">
-              <Plus className="mr-2 h-4 w-4" /> Create New Tour
-            </Link>
+          <Button
+            onClick={() => setIsTourFormOPen(true)}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Create New Tour
           </Button>
         )}
       </div>
 
       {user.role === "TRAVELER" ? <TravelerDashboard /> : <GuideDashboard />}
+      <TourModal
+        isOpen={tourForm}
+        onClose={() => setIsTourFormOPen(false)}
+        tour={null}
+      />
     </div>
   );
 }
@@ -409,7 +416,6 @@ function GuideDashboard() {
           </CardContent>
         </Card>
       </div>
-
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -673,10 +679,11 @@ function GuideDashboard() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full bg-primary hover:bg-primary/90" asChild>
-                <Link href="/tours/create">
-                  <Plus className="mr-2 h-4 w-4" /> Create New Tour
-                </Link>
+              <Button
+                className="w-full bg-primary hover:bg-primary/90"
+                //  onClick={() => setIsTourFormOPen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Create New Tour helo
               </Button>
             </CardFooter>
           </Card>

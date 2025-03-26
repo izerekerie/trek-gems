@@ -1,17 +1,32 @@
 import { useState, useEffect } from "react";
 import { X, Upload, Trash } from "lucide-react";
 import Image from "next/image";
-import { useTours } from "../hooks/useTours";
+import { useTours } from "@/hooks/useTour";
+import { useAuth } from "@/lib/auth-context";
 
-export default function TourModal({ isOpen, onClose, tour }) {
+interface TourModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tour?: {
+    id?: string;
+    title?: string;
+    description?: string;
+    location?: string;
+    price?: number;
+    images?: string[];
+  };
+}
+
+export default function TourModal({ isOpen, onClose, tour }: TourModalProps) {
   const { createTour, updateTour } = useTours();
-
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
     price: 0,
     images: [],
+    userId: user?.id || "",
   });
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
@@ -25,6 +40,7 @@ export default function TourModal({ isOpen, onClose, tour }) {
         location: tour.location || "",
         price: tour.price || 0,
         images: tour.images || [],
+        userId: user?.id || "",
       });
       setPreviewImages(tour.images || []);
     }
@@ -77,7 +93,6 @@ export default function TourModal({ isOpen, onClose, tour }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-
     try {
       if (tour) {
         // Update existing tour

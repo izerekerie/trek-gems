@@ -1,8 +1,21 @@
+"use client";
 import { tourAPI } from "@/services/tourServices";
 import { useState, useEffect, useCallback } from "react";
+export interface Tour {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  images: string[]; // Array of image URLs
+  userId: string;
+  createdAt: string; // ISO date string
+
+  // Optional relation
+}
 
 export const useTours = (initialFilters = {}) => {
-  const [tours, setTours] = useState([]);
+  const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [meta, setMeta] = useState({
@@ -48,20 +61,20 @@ export const useTours = (initialFilters = {}) => {
   const createTour = async (tourData, imageFiles = []) => {
     setLoading(true);
     try {
-      // First upload images if provided
       let images = [];
       if (imageFiles.length > 0) {
+        // Upload images to Cloudinary
         const uploadResult = await tourAPI.uploadImages(imageFiles);
-        images = uploadResult.imageUrls;
+        console.log("uploadResult", uploadResult);
+        images = uploadResult.imageUrls; // Ensure the response contains the image URLs
       }
 
-      // Create tour with image URLs
+      // Send tour data with image URLs to the backend
       const newTour = await tourAPI.createTour({
         ...tourData,
-        images,
+        images, // Only send URLs, not files
       });
 
-      // Refresh the tour list
       fetchTours();
       return newTour;
     } catch (err) {
@@ -121,6 +134,23 @@ export const useTours = (initialFilters = {}) => {
       setLoading(false);
     }
   };
+  //fetch tour by id
+
+  const getTour = async (id: string): Promise<Tour | null> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const tour = await tourAPI.getTour(id);
+      return tour; // Return the fetched tour data
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to fetch tour");
+      console.error("Error fetching tour:", err);
+      return null; // Return null if there's an error
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     tours,
@@ -132,6 +162,7 @@ export const useTours = (initialFilters = {}) => {
     changePage,
     createTour,
     updateTour,
+    getTour,
     deleteTour,
     refreshTours: fetchTours,
   };

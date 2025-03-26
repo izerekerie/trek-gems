@@ -1,21 +1,48 @@
-import Link from "next/link"
-import { Filter, MapPin, Star, Users } from "lucide-react"
+"use client";
+import Link from "next/link";
+import { Filter, MapPin, Star, Users } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useTours } from "@/hooks/useTour";
 
 export default function ToursPage() {
+  const { tours, loading, error } = useTours();
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">Discover Tours</h1>
-          <p className="text-muted-foreground">Explore Rwanda's hidden gems and authentic experiences</p>
+          <p className="text-muted-foreground">
+            Explore Rwanda's hidden gems and authentic experiences
+          </p>
         </div>
 
         <div className="w-full md:w-auto flex gap-2">
@@ -49,7 +76,9 @@ export default function ToursPage() {
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>Filters</SheetTitle>
-                <SheetDescription>Narrow down your search results</SheetDescription>
+                <SheetDescription>
+                  Narrow down your search results
+                </SheetDescription>
               </SheetHeader>
               <div className="py-4">
                 <MobileFilters />
@@ -83,9 +112,16 @@ export default function ToursPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tours.map((tour) => (
-              <Card key={tour.id} className="overflow-hidden transition-all hover:shadow-lg">
+              <Card
+                key={tour.id}
+                className="overflow-hidden transition-all hover:shadow-lg"
+              >
                 <div className="relative h-48 w-full">
-                  <img src={tour.image || "/placeholder.svg"} alt={tour.title} className="object-cover w-full h-full" />
+                  <img
+                    src={tour.images[0] || "/placeholder.svg"}
+                    alt={tour.title}
+                    className="object-cover w-full h-full"
+                  />
                   <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm font-medium">
                     ${tour.price}
                   </div>
@@ -97,15 +133,21 @@ export default function ToursPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="line-clamp-3 text-sm text-muted-foreground">{tour.description}</p>
+                  <p className="line-clamp-3 text-sm text-muted-foreground">
+                    {tour.description}
+                  </p>
                   <div className="flex items-center mt-4">
                     <div className="flex items-center">
                       <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                      <span className="ml-1 text-sm font-medium">{tour.rating}</span>
+                      <span className="ml-1 text-sm font-medium">
+                        {tour.rating}
+                      </span>
                     </div>
                     <div className="flex items-center ml-4">
                       <Users className="h-4 w-4 text-muted-foreground" />
-                      <span className="ml-1 text-sm text-muted-foreground">{tour.bookings}+ bookings</span>
+                      <span className="ml-1 text-sm text-muted-foreground">
+                        {tour.bookings}+ bookings
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -138,7 +180,7 @@ export default function ToursPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function DesktopFilters() {
@@ -211,7 +253,7 @@ function DesktopFilters() {
         Reset
       </Button>
     </div>
-  )
+  );
 }
 
 function MobileFilters() {
@@ -284,86 +326,30 @@ function MobileFilters() {
         Reset
       </Button>
     </div>
-  )
+  );
 }
 
 // Sample data
-const tours = [
-  {
-    id: 1,
-    title: "Lake Burera Cultural Experience",
-    location: "Northern Province",
-    description:
-      "Immerse yourself in the rich cultural heritage of communities surrounding Lake Burera. Learn traditional fishing techniques, participate in cultural dances, and enjoy authentic local cuisine.",
-    price: 89,
-    rating: 4.8,
-    bookings: 124,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 2,
-    title: "Nyungwe Forest Canopy Walk",
-    location: "Western Province",
-    description:
-      "Experience the breathtaking biodiversity of Nyungwe Forest from a unique perspective. Walk among the treetops on a canopy walkway and spot rare primates and birds in their natural habitat.",
-    price: 120,
-    rating: 4.9,
-    bookings: 256,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 3,
-    title: "Iby'Iwacu Cultural Village",
-    location: "Northern Province",
-    description:
-      "Visit a traditional Rwandan village where former poachers now showcase their cultural heritage. Learn about traditional medicine, archery, and dance while supporting conservation efforts.",
-    price: 75,
-    rating: 4.7,
-    bookings: 189,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 4,
-    title: "Gishwati-Mukura National Park Trek",
-    location: "Western Province",
-    description:
-      "Explore one of Rwanda's newest national parks with a guided trek through lush forests. Spot chimpanzees, golden monkeys, and numerous bird species in this recovering ecosystem.",
-    price: 95,
-    rating: 4.6,
-    bookings: 78,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 5,
-    title: "Traditional Pottery Workshop",
-    location: "Eastern Province",
-    description:
-      "Learn the ancient art of pottery from skilled local artisans. Create your own piece to take home while supporting the preservation of traditional crafts.",
-    price: 45,
-    rating: 4.9,
-    bookings: 112,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 6,
-    title: "Lake Kivu Fishing Experience",
-    location: "Western Province",
-    description:
-      "Join local fishermen on Lake Kivu for a traditional fishing expedition. Learn about sustainable fishing practices and enjoy a fresh fish lunch prepared on the shore.",
-    price: 65,
-    rating: 4.8,
-    bookings: 143,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-]
 
-const regions = ["Northern Province", "Southern Province", "Eastern Province", "Western Province", "Kigali"]
+const regions = [
+  "Northern Province",
+  "Southern Province",
+  "Eastern Province",
+  "Western Province",
+  "Kigali",
+];
 
 const durations = [
   { value: "half-day", label: "Half Day (1-4 hours)" },
   { value: "full-day", label: "Full Day (5-8 hours)" },
   { value: "multi-day", label: "Multi-Day (2+ days)" },
-]
+];
 
-const experienceTypes = ["Cultural", "Adventure", "Nature", "Food & Culinary", "Crafts & Artisans", "Community Service"]
-
+const experienceTypes = [
+  "Cultural",
+  "Adventure",
+  "Nature",
+  "Food & Culinary",
+  "Crafts & Artisans",
+  "Community Service",
+];

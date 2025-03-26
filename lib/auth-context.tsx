@@ -24,7 +24,12 @@ interface AuthContextType {
   error: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    role: User["role"]
+  ) => Promise<void>;
   logout: () => void;
   clearError: () => void;
 }
@@ -132,22 +137,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUser(user);
       setToken(token);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message[0] || "Login failed");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (
+    username: string,
+    email: string,
+    password: string,
+    role: string
+  ) => {
     try {
       setLoading(true);
       setError(null);
 
       const response = await apiclient.post("/auth/register", {
-        name,
+        username,
         email,
         password,
+        role,
       });
       const { user, token } = response.data;
 
@@ -158,7 +169,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUser(user);
       setToken(token);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message[0] || "Registration failed");
       throw err;
     } finally {
       setLoading(false);

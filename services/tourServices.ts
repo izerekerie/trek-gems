@@ -37,7 +37,7 @@ export const tourAPI = {
     files.forEach((file) => {
       formData.append("images", file);
     });
-
+    console.log("files", files);
     const response = await apiClient.post("/upload/images", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
