@@ -152,6 +152,23 @@ export const useTours = (initialFilters = {}) => {
     }
   };
 
+  const getToursByOwner = async (id: string): Promise<Tour | null> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const tour = await tourAPI.getToursByOwner(id);
+      console.log("tour in api", tour);
+      return tour; // Return the fetched tour data
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to fetch tour");
+      console.error("Error fetching tour:", err);
+      return null; // Return null if there's an error
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     tours,
     loading,
@@ -163,6 +180,7 @@ export const useTours = (initialFilters = {}) => {
     createTour,
     updateTour,
     getTour,
+    getToursByOwner,
     deleteTour,
     refreshTours: fetchTours,
   };

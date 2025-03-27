@@ -14,10 +14,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/lib/auth-context";
 import { User } from "next-auth";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 type UserRole = "TRAVELER" | "OPERATOR";
 export default function Register() {
   const router = useRouter();
+  const { toast } = useToast();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [FormError, setFormError] = useState("");
@@ -25,6 +28,7 @@ export default function Register() {
     username: "",
     email: "",
     password: "",
+    phoneNumber: "",
     confirmPassword: "",
     role: "TRAVELER" as UserRole,
   });
@@ -40,19 +44,22 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
     if (formData.password !== formData.confirmPassword) {
       setFormError("Passwords do not match");
       return;
     }
+
     await register(
       formData.username,
       formData.email,
       formData.password,
+      formData.phoneNumber,
+
       formData.role
     );
     router.push("/login");
   };
-  console.log("error", error);
   return (
     <div className="container max-w-md mx-auto py-12 px-4">
       <Link
@@ -99,7 +106,20 @@ export default function Register() {
               onChange={handleChange}
             />
           </div>
-
+          <div className="space-y-2">
+            <Label htmlFor="phoneNumber" className="text-gray-700">
+              Phone Number
+            </Label>
+            <Input
+              id="phoneNumber"
+              type="phoneNumber"
+              placeholder="250780000000"
+              required
+              className="border-gray-300"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="password" className="text-gray-700">
               Password

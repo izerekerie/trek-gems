@@ -25,9 +25,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (
-    name: string,
+    username: string,
     email: string,
     password: string,
+    phoneNumber: String,
+
     role: User["role"]
   ) => Promise<void>;
   logout: () => void;
@@ -148,6 +150,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     username: string,
     email: string,
     password: string,
+    phoneNumber: String,
     role: string
   ) => {
     try {
@@ -158,6 +161,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         username,
         email,
         password,
+        phoneNumber,
         role,
       });
       const { user, token } = response.data;
@@ -169,7 +173,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUser(user);
       setToken(token);
     } catch (err: any) {
-      setError(err.response?.data?.message[0] || "Registration failed");
+      setError(err.response?.data?.message);
       throw err;
     } finally {
       setLoading(false);

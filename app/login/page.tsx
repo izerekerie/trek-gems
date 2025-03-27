@@ -15,7 +15,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 // import { useSession, signIn, signOut } from "next-auth/react";
 export default function Login() {
   const { toast } = useToast();

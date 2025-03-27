@@ -26,17 +26,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth-context";
 import TourModal from "@/components/tourForm";
+import useBooking from "@/hooks/useBooking";
+import { useTours } from "@/hooks/useTour";
+import BookingForm from "@/components/BookingForm";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { getBookingsByOperator, getBookingByUser } = useBooking();
   const [tourForm, setIsTourFormOPen] = useState(false);
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!user) {
       router.push("/login");
     }
-  }, [user, loading, router]);
+  }, [user]);
 
   // Show loading or redirect if not authenticated
   if (loading || !user) {
@@ -76,7 +80,9 @@ export default function Dashboard() {
       {user.role === "TRAVELER" ? <TravelerDashboard /> : <GuideDashboard />}
       <TourModal
         isOpen={tourForm}
-        onClose={() => setIsTourFormOPen(false)}
+        onClose={() => {
+          setIsTourFormOPen(false);
+        }}
         tour={null}
       />
     </div>
@@ -364,6 +370,31 @@ function TravelerDashboard() {
 }
 
 function GuideDashboard() {
+  const { getToursByOwner } = useTours();
+  const { getBookingsByOperator, updateBooking } = useBooking();
+  const [editform, setEditForm] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [tours, setTours] = useState([]);
+
+  const { user } = useAuth();
+  useEffect(() => {
+    if (user) {
+      getBookingsByOperator(user.id).then((data) => {
+        setBookings(data);
+      });
+      getToursByOwner(user.id).then((data) => {
+        setTours(data);
+      });
+    }
+  }, []);
+
+  const handleConfirmBooking = async (booking) => {
+    await updateBooking({ ...booking, status: "CONFIRMED" });
+  };
+  const handleupdate = () => {
+    console.log("going to edit");
+    setEditForm(true);
+  };
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -613,20 +644,20 @@ function GuideDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {operatorTours.map((tour) => (
+                {tours.map((tour) => (
                   <div
                     key={tour.id}
                     className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-0 last:pb-0"
                   >
-                    <div className="flex items-center">
+                    <div className="flex  bgd-300-re w-full items-center">
                       <div className="w-16 h-16 rounded-md overflow-hidden mr-4">
-                        <img
-                          src={tour.image || "/placeholder.svg"}
+                        {/* <img
+                          src={tour.images[0] || "/placeholder.svg"}
                           alt={tour.title}
                           className="object-cover w-full h-full"
-                        />
+                        /> */}
                       </div>
-                      <div>
+                      <div className=" ">
                         <div className="font-medium text-gray-900">
                           {tour.title}
                         </div>
@@ -634,21 +665,11 @@ function GuideDashboard() {
                           <MapPin className="h-3 w-3 mr-1" />
                           {tour.location}
                         </div>
+                        <div className=" text-gray-600">
+                          <p>{tour.description}</p>
+                        </div>
                         <div className="flex items-center mt-1">
-                          <Badge
-                            variant={
-                              tour.status === "Active" ? "default" : "secondary"
-                            }
-                            className={
-                              tour.status === "Active"
-                                ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
-                                : ""
-                            }
-                          >
-                            {tour.status}
-                          </Badge>
-                          <span className="mx-2 text-gray-500">•</span>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-800 font-bold">
                             ${tour.price}
                           </span>
                         </div>
@@ -659,21 +680,25 @@ function GuideDashboard() {
                         variant="outline"
                         size="sm"
                         className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                        asChild
+                        onClick={() => handleupdate()}
                       >
-                        <Link href={`/tours/${tour.id}/edit`}>Edit</Link>
+                        Edit
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                        asChild
                       >
                         <Link href={`/tours/${tour.id}/bookings`}>
                           Bookings
                         </Link>
                       </Button>
                     </div>
+                    <TourModal
+                      tour={tour}
+                      isOpen={editform !== null}
+                      onClose={() => setEditForm(false)}
+                    />
                   </div>
                 ))}
               </div>
@@ -683,7 +708,7 @@ function GuideDashboard() {
                 className="w-full bg-primary hover:bg-primary/90"
                 //  onClick={() => setIsTourFormOPen(true)}
               >
-                <Plus className="mr-2 h-4 w-4" /> Create New Tour helo
+                <Plus className="mr-2 h-4 w-4" /> Create New Tour
               </Button>
             </CardFooter>
           </Card>
@@ -692,51 +717,47 @@ function GuideDashboard() {
         <TabsContent value="bookings" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900">
-                Recent Bookings
-              </CardTitle>
               <CardDescription>Manage your tour bookings</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {allBookings.map((booking) => (
+                {bookings.map((booking) => (
                   <div
-                    key={booking.id}
+                    key={booking?.id}
                     className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-0 last:pb-0"
                   >
                     <div className="flex items-center">
                       <Avatar className="h-10 w-10 mr-3">
-                        <AvatarImage src={booking.avatar} alt={booking.name} />
                         <AvatarFallback>
-                          {booking.name.charAt(0)}
+                          {booking.tour.title.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {booking.name}
+                          {booking.tour.title}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {booking.tour}
+                          {booking.tour.description}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {booking.date}, {booking.guests} guests
+                          {booking.date}, {booking.numberOfPeople} guests
                         </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end">
                       <div className="font-medium text-gray-900">
-                        ${booking.amount}
+                        ${booking.totalCost}
                       </div>
                       <Badge
                         variant={
-                          booking.status === "Confirmed"
+                          booking.status === "CONFIRMED"
                             ? "default"
-                            : booking.status === "Pending"
-                            ? "outline"
+                            : booking.status === "PENDING"
+                            ? "secondary"
                             : "destructive"
                         }
                         className={
-                          booking.status === "Confirmed"
+                          booking.status === "CONFIRMED"
                             ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
                             : ""
                         }
@@ -751,9 +772,10 @@ function GuideDashboard() {
                         >
                           Details
                         </Button>
-                        {booking.status === "Pending" && (
+                        {booking.status === "PENDING" && (
                           <Button
                             size="sm"
+                            onClick={() => handleConfirmBooking(booking)}
                             className="bg-primary hover:bg-primary/90"
                           >
                             Confirm

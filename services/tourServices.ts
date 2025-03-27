@@ -7,6 +7,11 @@ export const tourAPI = {
     return response.data;
   },
 
+  getToursByOwner: async (ownerId) => {
+    const response = await apiClient.get(`/tours/user/${ownerId}`);
+    return response.data;
+  },
+
   // Get a single tour by ID
   getTour: async (id) => {
     const response = await apiClient.get(`/tours/${id}`);
@@ -37,7 +42,6 @@ export const tourAPI = {
     files.forEach((file) => {
       formData.append("images", file);
     });
-    console.log("files", files);
     const response = await apiClient.post("/upload/images", formData, {
       headers: {
         "Content-Type": "multipart/form-data",

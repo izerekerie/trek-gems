@@ -36,17 +36,20 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Tour, useTours } from "@/hooks/useTour";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import BookingForm from "@/components/BookingForm";
+import { useAuth } from "@/lib/auth-context";
 
 export default function TourDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { toast } = useToast();
+  const router = useRouter();
   // In a real application, you would fetch the tour data based on the ID
   const { id } = useParams();
   const { getTour, loading, error } = useTours(); // Use the tour fetching hook
 
   const [tour, setTour] = useState<Tour | null>(null);
-
+  const { user, isAuthenticated } = useAuth();
   useEffect(() => {
     if (id) {
       getTour(id as string).then((fetchedTour) => {
@@ -69,13 +72,6 @@ export default function TourDetailPage() {
     setCurrentImageIndex((prev) =>
       prev === tour.images.length - 1 ? 0 : prev + 1
     );
-  };
-
-  const handleBookNow = () => {
-    toast({
-      title: "Booking initiated!",
-      description: "You'll be redirected to complete your booking.",
-    });
   };
 
   return (
@@ -376,64 +372,13 @@ export default function TourDetailPage() {
         </Tabs>
       </div>
 
-      <div className="lg:col-span-1">
-        <Card className="sticky top-8">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">${tour.price}</CardTitle>
-            <CardDescription>per person</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="date">Select Date</Label>
-              <div className="relative">
-                <Input id="date" type="text" placeholder="Select a date" />
-                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="guests">Number of Guests</Label>
-              <Select defaultValue="2">
-                <SelectTrigger id="guests">
-                  <SelectValue placeholder="Select number of guests" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 Guest</SelectItem>
-                  <SelectItem value="2">2 Guests</SelectItem>
-                  <SelectItem value="3">3 Guests</SelectItem>
-                  <SelectItem value="4">4 Guests</SelectItem>
-                  <SelectItem value="5">5 Guests</SelectItem>
-                  <SelectItem value="6">6+ Guests</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="pt-4 border-t">
-              <div className="flex justify-between mb-2">
-                <span>Price (2 guests)</span>
-                <span>${tour.price * 2}</span>
-              </div>
-              <div className="flex justify-between mb-2">
-                <span>Booking fee</span>
-                <span>$10</span>
-              </div>
-              <div className="flex justify-between font-bold pt-2 border-t">
-                <span>Total</span>
-                <span>${tour.price * 2 + 10}</span>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full" onClick={handleBookNow}>
-              Book Now
-            </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              You won't be charged yet. Payment will be collected after booking
-              confirmation.
-            </p>
-          </CardFooter>
-        </Card>
-      </div>
+      {user && isAuthenticated ? (
+        <div className="lg:col-span-1">
+          <BookingForm tour={tour} />
+        </div>
+      ) : (
+        <Button onClick={() => router.push("/login")}>Login to Book</Button>
+      )}
     </div>
   );
 }
