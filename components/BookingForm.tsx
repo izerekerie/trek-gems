@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 import useBooking from "@/hooks/useBooking";
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
 const BookingForm = ({ tour }) => {
@@ -49,7 +49,7 @@ const BookingForm = ({ tour }) => {
       title: "Booking initiated!",
       description: "You'll be redirected to complete your booking.",
     });
-    router.push("/bookings");
+    router.push("/dashboard");
   };
   return (
     <Card className="sticky top-8">

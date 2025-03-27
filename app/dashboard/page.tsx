@@ -90,6 +90,32 @@ export default function Dashboard() {
 }
 
 function TravelerDashboard() {
+  const { getToursByOwner } = useTours();
+  const { getBookingByUser, updateBooking } = useBooking();
+  const [bookings, setBookings] = useState([]);
+  const [tours, setTours] = useState([]);
+
+  const { user } = useAuth();
+  useEffect(() => {
+    if (user) {
+      getBookingByUser(user.id).then((data) => {
+        setBookings(data);
+      });
+      getToursByOwner(user.id).then((data) => {
+        setTours(data);
+      });
+    }
+  }, []);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const upcomingTrips = bookings.filter((trip) => new Date(trip.date) >= today);
+  const pastTrips = bookings.filter((trip) => new Date(trip.date) < today);
+
+  // Calculate total cost
+  const totalCost = bookings.reduce(
+    (sum, trip) => sum + (trip.totalCost || 0),
+    0
+  );
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -101,8 +127,9 @@ function TravelerDashboard() {
             <Calendar className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">2</div>
-            <p className="text-xs text-gray-500">Next trip in 15 days</p>
+            <div className="text-2xl font-bold text-gray-900">
+              {bookings.length}
+            </div>
           </CardContent>
         </Card>
         <Card className="border border-gray-200">
@@ -113,32 +140,8 @@ function TravelerDashboard() {
             <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">$1,245</div>
+            <div className="text-2xl font-bold text-gray-900">${totalCost}</div>
             <p className="text-xs text-gray-500">Across 5 bookings</p>
-          </CardContent>
-        </Card>
-        <Card className="border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">
-              Saved Tours
-            </CardTitle>
-            <Star className="h-4 w-4 text-gray-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">8</div>
-            <p className="text-xs text-gray-500">Tours on your wishlist</p>
-          </CardContent>
-        </Card>
-        <Card className="border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">
-              Reviews Given
-            </CardTitle>
-            <Star className="h-4 w-4 text-gray-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">3</div>
-            <p className="text-xs text-gray-500">Average rating: 4.7</p>
           </CardContent>
         </Card>
       </div>
@@ -169,21 +172,21 @@ function TravelerDashboard() {
                   >
                     <div className="flex items-center">
                       <div className="w-16 h-16 rounded-md overflow-hidden mr-4">
-                        {/* <img
-                          src={trip.image || "/placeholder.svg"}
-                          alt={trip.tour}
+                        <img
+                          src={trip.tour.images[0] || "/placeholder.svg"}
+                          alt={trip.tour.title}
                           className="object-cover w-full h-full"
-                        /> */}
+                        />
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {trip.tour}
+                          {trip.tour.title}
                         </div>
                         <div className="text-sm text-gray-600">{trip.date}</div>
                         <div className="flex items-center mt-1">
                           <Badge
                             variant={
-                              trip.status === "Confirmed"
+                              trip.status === "CONFIRMED"
                                 ? "default"
                                 : "outline"
                             }
@@ -196,10 +199,10 @@ function TravelerDashboard() {
                     </div>
                     <div className="flex flex-col items-end">
                       <div className="font-medium text-gray-900">
-                        ${trip.amount}
+                        ${trip.totalCost}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {trip.guests} guests
+                        {trip.numberOfPeople} guests
                       </div>
                       <Button
                         variant="outline"
