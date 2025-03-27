@@ -29,6 +29,7 @@ import TourModal from "@/components/tourForm";
 import useBooking from "@/hooks/useBooking";
 import { useTours } from "@/hooks/useTour";
 import BookingForm from "@/components/BookingForm";
+import ReviewModal from "@/components/UseReviewModal";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -92,6 +93,7 @@ export default function Dashboard() {
 function TravelerDashboard() {
   const { getToursByOwner } = useTours();
   const { getBookingByUser, updateBooking } = useBooking();
+  const [reviewModal, setReviewModal] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [tours, setTours] = useState([]);
 
@@ -110,7 +112,7 @@ function TravelerDashboard() {
   today.setHours(0, 0, 0, 0);
   const upcomingTrips = bookings.filter((trip) => new Date(trip.date) >= today);
   const pastTrips = bookings.filter((trip) => new Date(trip.date) < today);
-
+  console.log("past", pastTrips);
   // Calculate total cost
   const totalCost = bookings.reduce(
     (sum, trip) => sum + (trip.totalCost || 0),
@@ -209,7 +211,7 @@ function TravelerDashboard() {
                         size="sm"
                         className="mt-2 border-gray-300 text-gray-700 hover:bg-gray-50"
                       >
-                        View Details
+                        View Details{" "}
                       </Button>
                     </div>
                   </div>
@@ -247,60 +249,37 @@ function TravelerDashboard() {
                   >
                     <div className="flex items-center">
                       <div className="w-16 h-16 rounded-md overflow-hidden mr-4">
-                        {/* <img
-                          src={trip.image || "/placeholder.svg"}
-                          alt={trip.tour}
+                        <img
+                          src={trip.tour.images[0] || "/placeholder.svg"}
+                          alt={trip.tour.title}
                           className="object-cover w-full h-full"
-                        /> */}
+                        />
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {trip.tour}
+                          {trip?.tour.title}
                         </div>
                         <div className="text-sm text-gray-600">{trip.date}</div>
-                        <div className="flex mt-1">
-                          {trip.reviewed ? (
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-3 w-3 ${
-                                    i < trip?.rating
-                                      ? "text-yellow-500 fill-yellow-500"
-                                      : "text-gray-300"
-                                  }`}
-                                />
-                              ))}
-                              <span className="ml-1 text-xs text-gray-600">
-                                Your rating
-                              </span>
-                            </div>
-                          ) : (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 text-primary hover:bg-primary/10 px-2 py-0"
-                              asChild
-                            >
-                              <Link href={`/tours/${trip.id}/review`}>
-                                Write a Review
-                              </Link>
-                            </Button>
-                          )}
-                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end">
                       <div className="font-medium text-gray-900">
-                        ${trip.amount}
+                        ${trip.totalCost}
                       </div>
                       <Button
+                        onClick={() => setReviewModal(true)}
                         variant="outline"
                         size="sm"
-                        className="mt-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="mt-2 border-gray-300  bg-primary text-white hover:bg-gray-50"
                       >
-                        View Details
+                        Make Review{" "}
                       </Button>
+                      <ReviewModal
+                        isOpen={reviewModal}
+                        selectedTour={trip.tour}
+                        userId={trip.userId}
+                        closeModal={() => setReviewModal(false)}
+                      />
                     </div>
                   </div>
                 ))}
