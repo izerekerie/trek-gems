@@ -169,11 +169,11 @@ function TravelerDashboard() {
                   >
                     <div className="flex items-center">
                       <div className="w-16 h-16 rounded-md overflow-hidden mr-4">
-                        <img
+                        {/* <img
                           src={trip.image || "/placeholder.svg"}
                           alt={trip.tour}
                           className="object-cover w-full h-full"
-                        />
+                        /> */}
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
@@ -244,11 +244,11 @@ function TravelerDashboard() {
                   >
                     <div className="flex items-center">
                       <div className="w-16 h-16 rounded-md overflow-hidden mr-4">
-                        <img
+                        {/* <img
                           src={trip.image || "/placeholder.svg"}
                           alt={trip.tour}
                           className="object-cover w-full h-full"
-                        />
+                        /> */}
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
@@ -323,7 +323,7 @@ function TravelerDashboard() {
                   >
                     <div className="w-16 h-16 rounded-md overflow-hidden mr-3">
                       <img
-                        src={tour.image || "/placeholder.svg"}
+                        src={tour.image[0] || "/placeholder.svg"}
                         alt={tour.title}
                         className="object-cover w-full h-full"
                       />
@@ -392,7 +392,6 @@ function GuideDashboard() {
     await updateBooking({ ...booking, status: "CONFIRMED" });
   };
   const handleupdate = () => {
-    console.log("going to edit");
     setEditForm(true);
   };
   return (
@@ -528,7 +527,7 @@ function GuideDashboard() {
                     <div key={tour.id} className="flex items-center">
                       <div className="w-12 h-12 rounded-md overflow-hidden mr-3">
                         <img
-                          src={tour.image || "/placeholder.svg"}
+                          src={tour.image[0] || "/placeholder.svg"}
                           alt={tour.title}
                           className="object-cover w-full h-full"
                         />
@@ -585,11 +584,11 @@ function GuideDashboard() {
                   >
                     <div className="flex items-center">
                       <div className="w-12 h-12 rounded-md overflow-hidden mr-3">
-                        <img
+                        {/* <img
                           src={checkin.tourImage || "/placeholder.svg"}
                           alt={checkin.tour}
                           className="object-cover w-full h-full"
-                        />
+                        /> */}
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
@@ -651,11 +650,11 @@ function GuideDashboard() {
                   >
                     <div className="flex  bgd-300-re w-full items-center">
                       <div className="w-16 h-16 rounded-md overflow-hidden mr-4">
-                        {/* <img
+                        <img
                           src={tour.images[0] || "/placeholder.svg"}
                           alt={tour.title}
                           className="object-cover w-full h-full"
-                        /> */}
+                        />
                       </div>
                       <div className=" ">
                         <div className="font-medium text-gray-900">
@@ -696,7 +695,7 @@ function GuideDashboard() {
                     </div>
                     <TourModal
                       tour={tour}
-                      isOpen={editform !== null}
+                      isOpen={editform}
                       onClose={() => setEditForm(false)}
                     />
                   </div>

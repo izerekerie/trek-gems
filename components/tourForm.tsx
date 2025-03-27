@@ -199,11 +199,11 @@ export default function TourModal({ isOpen, onClose, tour }: TourModalProps) {
                   key={index}
                   className="relative w-24 h-24 border rounded-md overflow-hidden"
                 >
-                  <Image
+                  <img
                     src={img}
                     alt={`Preview ${index}`}
                     fill
-                    className="object-cover"
+                    className="object-cover w-full h-full"
                   />
                   <button
                     type="button"
