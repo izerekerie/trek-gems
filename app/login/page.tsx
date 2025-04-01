@@ -136,7 +136,7 @@ export default function Login() {
         </form>
 
         <Separator className="my-8" />
-
+        {/* 
         <div className="space-y-4">
           <Button
             onClick={() => signIn("google")}
@@ -159,7 +159,7 @@ export default function Login() {
               Sign up
             </Link>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -25,7 +25,8 @@ export const useTours = (initialFilters = {}) => {
     totalPages: 0,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
+  const itemsPerPage = 6;
+  const [topTours, setTopTours] = useState<Tour[]>([]);
   const [filters, setFilters] = useState(initialFilters);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
@@ -35,6 +36,11 @@ export const useTours = (initialFilters = {}) => {
 
     try {
       const result = await tourAPI.getTours(filters);
+      const sortedTours = [...result.data]
+        .filter((tour) => tour.avgRating > 0)
+        .sort((a, b) => b.avgRating - a.avgRating);
+      setTopTours(sortedTours.slice(0, 3));
+      setTopTours(sortedTours.slice(0, 3));
       setTours(result.data);
       setMeta(result.meta);
     } catch (err) {
@@ -218,6 +224,7 @@ export const useTours = (initialFilters = {}) => {
     setSearchQuery,
     searchQuery,
     currentPage,
+    topTours,
     totalPages,
     setCurrentPage,
     createTour,

@@ -13,13 +13,12 @@ import { Button } from "@/components/ui/button";
 import useBooking from "@/hooks/useBooking";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 
 const BookingForm = ({ tour }) => {
   const { createBooking } = useBooking();
   const router = useRouter();
   const { user } = useAuth();
-  const { toast } = useToast();
   const {
     register,
     handleSubmit,
@@ -48,6 +47,7 @@ const BookingForm = ({ tour }) => {
     toast({
       title: "Booking initiated!",
       description: "You'll be redirected to complete your booking.",
+      variant: "success",
     });
     router.push("/dashboard");
   };

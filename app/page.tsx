@@ -1,10 +1,20 @@
-import Link from "next/link"
-import { ArrowRight, MapPin, Star, Users } from "lucide-react"
+"use client";
+import Link from "next/link";
+import { ArrowRight, MapPin, Star, Users } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useTours } from "@/hooks/useTour";
 
 export default function Home() {
+  const { topTours } = useTours();
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -12,16 +22,24 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/placeholder.svg?height=600&width=1200')" }}
+          style={{
+            backgroundImage: "url('/hills.jpg?height=600&width=1200')",
+          }}
         />
         <div className="relative z-20 container mx-auto px-4 text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">Discover Rwanda's Hidden Gems</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            Discover Rwanda's Hidden Gems
+          </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Connect with authentic experiences in Rwanda's rural areas, supporting local communities while creating
-            unforgettable memories.
+            Connect with authentic experiences in Rwanda's rural areas,
+            supporting local communities while creating unforgettable memories.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+            <Button
+              size="lg"
+              className="bg-primary hover:bg-primary/90"
+              asChild
+            >
               <Link href="/tours">
                 Explore Tours <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -42,17 +60,27 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">Featured Hidden Gems</h2>
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">
+              Featured Hidden Gems
+            </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore these carefully selected experiences that showcase Rwanda's natural beauty and cultural richness
+              Explore these carefully selected experiences that showcase
+              Rwanda's natural beauty and cultural richness
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredTours.map((tour) => (
-              <Card key={tour.id} className="overflow-hidden transition-all hover:shadow-lg border border-gray-200">
+            {topTours.map((tour) => (
+              <Card
+                key={tour.id}
+                className="overflow-hidden transition-all hover:shadow-lg border border-gray-200"
+              >
                 <div className="relative h-48 w-full">
-                  <img src={tour.image || "/placeholder.svg"} alt={tour.title} className="object-cover w-full h-full" />
+                  <img
+                    src={tour.images[0] || "/placeholder.svg"}
+                    alt={tour.title}
+                    className="object-cover w-full h-full"
+                  />
                   <div className="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded-md text-sm font-medium">
                     ${tour.price}
                   </div>
@@ -64,20 +92,29 @@ export default function Home() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="line-clamp-3 text-gray-700">{tour.description}</p>
+                  <p className="line-clamp-3 text-gray-700">
+                    {tour.description}
+                  </p>
                   <div className="flex items-center mt-4">
                     <div className="flex items-center">
                       <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                      <span className="ml-1 text-sm font-medium">{tour.rating}</span>
+                      <span className="ml-1 text-sm font-medium">
+                        {tour.rating}
+                      </span>
                     </div>
                     <div className="flex items-center ml-4">
                       <Users className="h-4 w-4 text-gray-500" />
-                      <span className="ml-1 text-sm text-gray-500">{tour.bookings}+ bookings</span>
+                      <span className="ml-1 text-sm text-gray-500">
+                        {tour._count.bookings}+ bookings
+                      </span>
                     </div>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button asChild className="w-full bg-primary hover:bg-primary/90">
+                  <Button
+                    asChild
+                    className="w-full bg-primary hover:bg-primary/90"
+                  >
                     <Link href={`/tours/${tour.id}`}>View Details</Link>
                   </Button>
                 </CardFooter>
@@ -86,7 +123,12 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-12">
-            <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10" asChild>
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-primary text-primary hover:bg-primary/80"
+              asChild
+            >
               <Link href="/tours">
                 View All Tours <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -100,17 +142,23 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-4 text-gray-900">Making a Positive Impact</h2>
+              <h2 className="text-3xl font-bold mb-4 text-gray-900">
+                Making a Positive Impact
+              </h2>
               <p className="text-gray-600 mb-6">
-                When you book with Trek-Gems, you're directly contributing to local communities and sustainable
-                development.
+                When you book with Trek-Gems, you're directly contributing to
+                local communities and sustainable development.
               </p>
               <ul className="space-y-4">
                 {impactPoints.map((point, index) => (
                   <li key={index} className="flex">
-                    <div className="bg-primary/10 p-2 rounded-full mr-4">{point.icon}</div>
+                    <div className="bg-primary/10 p-2 rounded-full mr-4">
+                      {point.icon}
+                    </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{point.title}</h3>
+                      <h3 className="font-medium text-gray-900">
+                        {point.title}
+                      </h3>
                       <p className="text-gray-600">{point.description}</p>
                     </div>
                   </li>
@@ -122,7 +170,7 @@ export default function Home() {
             </div>
             <div className="relative h-[400px] rounded-lg overflow-hidden">
               <img
-                src="/placeholder.svg?height=400&width=600"
+                src="/gicu.jpg?height=400&width=600"
                 alt="Local community members benefiting from tourism"
                 className="object-cover w-full h-full"
               />
@@ -135,9 +183,12 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">What Travelers Say</h2>
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">
+              What Travelers Say
+            </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Hear from travelers who have experienced Rwanda's hidden gems firsthand
+              Hear from travelers who have experienced Rwanda's hidden gems
+              firsthand
             </p>
           </div>
 
@@ -150,14 +201,20 @@ export default function Home() {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 ${i < testimonial.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                          className={`h-4 w-4 ${
+                            i < testimonial.rating
+                              ? "text-yellow-500 fill-yellow-500"
+                              : "text-gray-300"
+                          }`}
                         />
                       ))}
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="italic text-gray-700">"{testimonial.comment}"</p>
+                  <p className="italic text-gray-700">
+                    "{testimonial.comment}"
+                  </p>
                 </CardContent>
                 <CardFooter>
                   <div className="flex items-center">
@@ -169,8 +226,12 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{testimonial.name}</p>
-                      <p className="text-sm text-gray-600">{testimonial.from}</p>
+                      <p className="font-medium text-gray-900">
+                        {testimonial.name}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {testimonial.from}
+                      </p>
                     </div>
                   </div>
                 </CardFooter>
@@ -183,79 +244,59 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-16 bg-primary text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Discover Rwanda's Hidden Gems?</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Ready to Discover Rwanda's Hidden Gems?
+          </h2>
           <p className="max-w-2xl mx-auto mb-8">
-            Join us in promoting responsible tourism that benefits local communities while creating unforgettable
-            experiences.
+            Join us in promoting responsible tourism that benefits local
+            communities while creating unforgettable experiences.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="bg-secondary hover:bg-secondary/90" asChild>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="bg-secondary hover:bg-secondary/90"
+              asChild
+            >
               <Link href="/tours">Browse Tours</Link>
             </Button>
-            <Button size="lg" variant="outline" className="bg-transparent border-white hover:bg-white/10" asChild>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-transparent border-white hover:bg-white/10"
+              asChild
+            >
               <Link href="/register">Sign Up</Link>
             </Button>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
 
 // Sample data
-const featuredTours = [
-  {
-    id: 1,
-    title: "Lake Burera Cultural Experience",
-    location: "Northern Province",
-    description:
-      "Immerse yourself in the rich cultural heritage of communities surrounding Lake Burera. Learn traditional fishing techniques, participate in cultural dances, and enjoy authentic local cuisine.",
-    price: 89,
-    rating: 4.8,
-    bookings: 124,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 2,
-    title: "Nyungwe Forest Canopy Walk",
-    location: "Western Province",
-    description:
-      "Experience the breathtaking biodiversity of Nyungwe Forest from a unique perspective. Walk among the treetops on a canopy walkway and spot rare primates and birds in their natural habitat.",
-    price: 120,
-    rating: 4.9,
-    bookings: 256,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 3,
-    title: "Iby'Iwacu Cultural Village",
-    location: "Northern Province",
-    description:
-      "Visit a traditional Rwandan village where former poachers now showcase their cultural heritage. Learn about traditional medicine, archery, and dance while supporting conservation efforts.",
-    price: 75,
-    rating: 4.7,
-    bookings: 189,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-]
 
 const impactPoints = [
   {
     icon: <Users className="h-5 w-5 text-primary" />,
     title: "Community Employment",
-    description: "We've created over 200 jobs for local community members across Rwanda.",
+    description:
+      "We've created over 200 jobs for local community members across Rwanda.",
   },
   {
     icon: <MapPin className="h-5 w-5 text-primary" />,
     title: "Rural Development",
-    description: "Tourism revenue has helped build schools and healthcare facilities in rural areas.",
+    description:
+      "Tourism revenue has helped build schools and healthcare facilities in rural areas.",
   },
   {
     icon: <Star className="h-5 w-5 text-primary" />,
     title: "Cultural Preservation",
-    description: "Our tours help preserve and celebrate Rwanda's rich cultural heritage.",
+    description:
+      "Our tours help preserve and celebrate Rwanda's rich cultural heritage.",
   },
-]
+];
 
 const testimonials = [
   {
@@ -282,5 +323,4 @@ const testimonials = [
       "Beautiful landscapes, warm people, and the knowledge that my tourism dollars were directly helping local communities made this trip unforgettable.",
     avatar: "/placeholder.svg?height=40&width=40",
   },
-]
-
+];

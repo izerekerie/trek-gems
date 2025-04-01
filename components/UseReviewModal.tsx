@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useReviews } from "@/hooks/useReview";
+import { toast } from "@/hooks/use-toast";
 
 const ReviewModal = ({ isOpen, selectedTour, closeModal, userId, review }) => {
   const { createReview, updateReview } = useReviews();
@@ -23,6 +24,11 @@ const ReviewModal = ({ isOpen, selectedTour, closeModal, userId, review }) => {
     try {
       if (review) {
         await updateReview(review.id, { rating, comment });
+        toast({
+          title: "Add A review",
+          description: "Review saved  successfully",
+          variant: "success",
+        });
       } else {
         await createReview({
           userId,
@@ -31,7 +37,11 @@ const ReviewModal = ({ isOpen, selectedTour, closeModal, userId, review }) => {
           comment,
         });
       }
-      alert("Review saved successfully!");
+      toast({
+        title: "Add A review",
+        description: "Review saved  successfully",
+        variant: "success",
+      });
       closeModal();
     } catch (error) {
       alert("Failed to save review");

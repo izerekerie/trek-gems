@@ -115,6 +115,11 @@ export default function TourModal({ isOpen, onClose, tour }: TourModalProps) {
       onClose();
     } catch (error) {
       console.error("Error saving tour:", error);
+      toast({
+        title: "Failed to update",
+        description: `Failed to save tour: ${error}`,
+        variant: "error",
+      });
       alert("Failed to save tour. Please try again.");
     } finally {
       setUploading(false);
