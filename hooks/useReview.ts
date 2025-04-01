@@ -65,7 +65,20 @@ export const useReviews = (initialFilters = {}) => {
       setLoading(false);
     }
   };
-
+  const updateReview = async (id, reviewData) => {
+    setLoading(true);
+    try {
+      const newReview = await reviewAPI.updateReview(id, reviewData);
+      fetchReviews();
+      return newReview;
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update review");
+      console.error("Error updating review:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   const getReviewsByUser = async (userId: string): Promise<Review[] | null> => {
     setLoading(true);
     setError(null);
@@ -104,6 +117,7 @@ export const useReviews = (initialFilters = {}) => {
     error,
     meta,
     filters,
+    updateReview,
     updateFilters,
     changePage,
     createReview,
