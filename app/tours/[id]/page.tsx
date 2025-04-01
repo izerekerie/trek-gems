@@ -39,6 +39,7 @@ import { Tour, useTours } from "@/hooks/useTour";
 import { useParams, useRouter } from "next/navigation";
 import BookingForm from "@/components/BookingForm";
 import { useAuth } from "@/lib/auth-context";
+import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 
 export default function TourDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -323,23 +324,22 @@ export default function TourDetailPage() {
           <TabsContent value="reviews" className="space-y-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold">Reviews</h2>
+
               <Button>Write a Review</Button>
             </div>
 
             <div className="space-y-6">
               {tour?.reviews.map((review, index) => (
                 <div key={index} className="border-b pb-6 last:border-0">
-                  <div className="flex items-start">
-                    <div className="w-10 h-10 rounded-full overflow-hidden mr-4">
-                      <img
-                        src={review.avatar || "/placeholder.svg"}
-                        alt={review.name}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
+                  <div className="flex items-start gap-2">
+                    <Avatar className="h-6 w-6 bg-gray-200 rounded-full px-2 ">
+                      <AvatarFallback>
+                        {review.user.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <div className="flex items-center">
-                        <h3 className="font-medium">{review.name}</h3>
+                        <h3 className="font-medium">{review.user.username}</h3>
                         <span className="mx-2 text-muted-foreground">•</span>
                         <span className="text-sm text-muted-foreground">
                           {review.country}

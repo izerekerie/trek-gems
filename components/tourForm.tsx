@@ -3,6 +3,7 @@ import { X, Upload, Trash } from "lucide-react";
 import Image from "next/image";
 import { useTours } from "@/hooks/useTour";
 import { useAuth } from "@/lib/auth-context";
+import { toast } from "@/hooks/use-toast";
 
 interface TourModalProps {
   isOpen: boolean;
@@ -97,9 +98,19 @@ export default function TourModal({ isOpen, onClose, tour }: TourModalProps) {
       if (tour) {
         // Update existing tour
         await updateTour(tour.id, formData, imageFiles);
+        toast({
+          title: "Update Tour",
+          description: "Tour updated successfully",
+          variant: "success",
+        });
       } else {
         // Create new tour
         await createTour(formData, imageFiles);
+        toast({
+          title: "Tour Creation ",
+          description: "Tour Created successfully",
+          variant: "success",
+        });
       }
       onClose();
     } catch (error) {

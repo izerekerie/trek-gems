@@ -48,38 +48,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize auth state from localStorage
   useEffect(() => {
-    const initializeAuth = async () => {
-      const storedToken = localStorage.getItem("token");
-      const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
 
-      if (storedToken && storedUser) {
-        try {
-          setToken(storedToken);
-          setUser(JSON.parse(storedUser));
-
-          // Set axios default headers
-          apiclient.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${storedToken}`;
-
-          // Verify token is still valid
-          await apiclient.get("/auth/verify");
-        } catch (err) {
-          // Token invalid, clear auth state
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setToken(null);
-          setUser(null);
-          delete apiclient.defaults.headers.common["Authorization"];
-        }
-      }
-
-      setLoading(false);
-    };
-
-    initializeAuth();
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+      apiclient.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${storedToken}`;
+    }
+    setLoading(false);
   }, []);
 
   // Configure axios interceptors for token handling

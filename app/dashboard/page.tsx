@@ -30,6 +30,7 @@ import useBooking from "@/hooks/useBooking";
 import { useTours } from "@/hooks/useTour";
 import BookingForm from "@/components/BookingForm";
 import ReviewModal from "@/components/UseReviewModal";
+import { toast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -112,7 +113,6 @@ function TravelerDashboard() {
   today.setHours(0, 0, 0, 0);
   const upcomingTrips = bookings.filter((trip) => new Date(trip.date) >= today);
   const pastTrips = bookings.filter((trip) => new Date(trip.date) < today);
-  console.log("past", pastTrips);
   // Calculate total cost
   const totalCost = bookings.reduce(
     (sum, trip) => sum + (trip.totalCost || 0),
@@ -436,185 +436,6 @@ function GuideDashboard() {
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="border border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-xl text-gray-900">
-                  Recent Bookings
-                </CardTitle>
-                <CardDescription>
-                  You have 12 bookings this week
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentBookings.map((booking) => (
-                    <div
-                      key={booking.id}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center">
-                        <Avatar className="h-9 w-9 mr-3">
-                          <AvatarImage
-                            src={booking.avatar}
-                            alt={booking.name}
-                          />
-                          <AvatarFallback>
-                            {booking.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {booking.name}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {booking.tour}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-gray-900">${booking.amount}</div>
-                        <div className="text-sm text-gray-600">
-                          {booking.date}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                  asChild
-                >
-                  <Link href="/bookings">View All Bookings</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-
-            <Card className="border border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-xl text-gray-900">
-                  Popular Tours
-                </CardTitle>
-                <CardDescription>
-                  Your most booked tours this month
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {popularTours.map((tour) => (
-                    <div key={tour.id} className="flex items-center">
-                      <div className="w-12 h-12 rounded-md overflow-hidden mr-3">
-                        <img
-                          src={tour.image[0] || "/placeholder.svg"}
-                          alt={tour.title}
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900">
-                          {tour.title}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          {tour.location}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
-                          <span className="text-gray-900">{tour.rating}</span>
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {tour.bookings} bookings
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                  asChild
-                >
-                  <Link href="/tours">View All Tours</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-
-          <Card className="border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">
-                Upcoming Check-ins
-              </CardTitle>
-              <CardDescription>
-                Guests arriving in the next 7 days
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {upcomingCheckins.map((checkin) => (
-                  <div
-                    key={checkin.id}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 rounded-md overflow-hidden mr-3">
-                        {/* <img
-                          src={checkin.tourImage || "/placeholder.svg"}
-                          alt={checkin.tour}
-                          className="object-cover w-full h-full"
-                        /> */}
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {checkin.tour}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {checkin.date}, {checkin.time}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="mr-4">
-                        <div className="font-medium text-gray-900">
-                          {checkin.guestName}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {checkin.guests} guests
-                        </div>
-                      </div>
-                      <Badge
-                        variant={
-                          checkin.status === "Confirmed" ? "default" : "outline"
-                        }
-                        className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
-                      >
-                        {checkin.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                variant="outline"
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                asChild
-              >
-                <Link href="/checkins">View All Check-ins</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="tours" className="space-y-4">
           <Card className="border border-gray-200">
             <CardHeader>
@@ -649,18 +470,20 @@ function GuideDashboard() {
                         <div className=" text-gray-600">
                           <p>{tour.description}</p>
                         </div>
-                        <div className="flex items-center mt-1">
+                        <div className="flex items-center mt-1 text-sm text-gray-600">
+                          Price:
                           <span className="text-sm text-gray-800 font-bold">
                             ${tour.price}
                           </span>
                         </div>
                       </div>
                     </div>
+
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="border-gray-300 text-gray-700 hover:bg-primary"
                         onClick={() => handleupdate()}
                       >
                         Edit
@@ -668,13 +491,55 @@ function GuideDashboard() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="border-gray-300 text-gray-700 hover:bg-primary hover-text-primary"
                       >
                         <Link href={`/tours/${tour.id}/bookings`}>
-                          Bookings
+                          {tour?._count?.bookings || 0} Bookings
                         </Link>
                       </Button>
                     </div>
+                    {tour?.reviews?.map((review, index) => (
+                      <div key={index} className="border-b pb-6 last:border-0">
+                        <div className="flex items-start gap-2">
+                          <Avatar className="h-6 w-6 bg-gray-200 rounded-full px-2 ">
+                            <AvatarFallback>
+                              {review.user.username.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="flex items-center">
+                              <h3 className="font-medium">
+                                {review.user.username}
+                              </h3>
+                              <span className="mx-2 text-muted-foreground">
+                                •
+                              </span>
+                              <span className="text-sm text-muted-foreground">
+                                {review.country}
+                              </span>
+                            </div>
+                            <div className="flex items-center mt-1">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-4 w-4 ${
+                                      i < review.rating
+                                        ? "text-yellow-500 fill-yellow-500"
+                                        : "text-muted"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="ml-2 text-sm text-muted-foreground">
+                                {review.date}
+                              </span>
+                            </div>
+                            <p className="mt-3">{review.comment}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                     <TourModal
                       tour={tour}
                       isOpen={editform}
@@ -684,14 +549,6 @@ function GuideDashboard() {
                 ))}
               </div>
             </CardContent>
-            <CardFooter>
-              <Button
-                className="w-full bg-primary hover:bg-primary/90"
-                //  onClick={() => setIsTourFormOPen(true)}
-              >
-                <Plus className="mr-2 h-4 w-4" /> Create New Tour
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
 
@@ -783,66 +640,50 @@ function GuideDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {reviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="border-b border-gray-200 pb-6 last:border-0"
-                  >
-                    <div className="flex items-start">
-                      <Avatar className="h-10 w-10 mr-3">
-                        <AvatarImage src={review.avatar} alt={review.name} />
-                        <AvatarFallback>{review.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {review.name}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              {review.tour}
-                            </div>
+                <div className="space-y-6">
+                  {/* {reviews?.map((review, index) => (
+                    <div key={index} className="border-b pb-6 last:border-0">
+                      <div className="flex items-start gap-2">
+                        <Avatar className="h-6 w-6 bg-gray-200 rounded-full px-2 ">
+                          <AvatarFallback>
+                            {review.user.username.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="flex items-center">
+                            <h3 className="font-medium">
+                              {review.user.username}
+                            </h3>
+                            <span className="mx-2 text-muted-foreground">
+                              •
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {review.country}
+                            </span>
                           </div>
-                          <div className="text-sm text-gray-600">
-                            {review.date}
+                          <div className="flex items-center mt-1">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${
+                                    i < review.rating
+                                      ? "text-yellow-500 fill-yellow-500"
+                                      : "text-muted"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="ml-2 text-sm text-muted-foreground">
+                              {review.date}
+                            </span>
                           </div>
+                          <p className="mt-3">{review.comment}</p>
                         </div>
-                        <div className="flex mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-4 w-4 ${
-                                i < review.rating
-                                  ? "text-yellow-500 fill-yellow-500"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <p className="mt-2 text-gray-700">{review.comment}</p>
-                        {!review.replied && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="mt-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                          >
-                            Reply
-                          </Button>
-                        )}
-                        {review.replied && (
-                          <div className="mt-3 pl-4 border-l-2 border-gray-200">
-                            <div className="font-medium text-gray-900">
-                              Your response:
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {review.reply}
-                            </p>
-                          </div>
-                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))} */}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1105,45 +946,5 @@ const allBookings = [
     guests: 2,
     amount: 178,
     status: "Cancelled",
-  },
-];
-
-const reviews = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    tour: "Lake Burera Cultural Experience",
-    date: "May 15, 2023",
-    rating: 5,
-    comment:
-      "This was the highlight of our Rwanda trip! The community was so welcoming, and we learned so much about traditional fishing techniques. The lunch was delicious, and the cultural performances were amazing. Highly recommend!",
-    replied: true,
-    reply:
-      "Thank you so much for your kind words, Sarah! We're thrilled that you enjoyed the experience and had a chance to connect with our community. We hope to welcome you back to Rwanda soon!",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    avatar: "/placeholder.svg?height=40&width=40",
-    tour: "Nyungwe Forest Canopy Walk",
-    date: "May 10, 2023",
-    rating: 4,
-    comment:
-      "The canopy walk was breathtaking and our guide was very knowledgeable about the forest ecosystem. The only reason I'm giving 4 stars instead of 5 is because the trek to get there was more strenuous than advertised. Still highly recommend, just be prepared for a workout!",
-    replied: false,
-  },
-  {
-    id: 3,
-    name: "Emma Wilson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    tour: "Iby'Iwacu Cultural Village",
-    date: "May 5, 2023",
-    rating: 5,
-    comment:
-      "What an incredible cultural experience! The demonstrations were fascinating and the people were so warm and welcoming. I especially loved learning about traditional medicine and trying my hand at archery. This is a must-do when visiting Rwanda.",
-    replied: true,
-    reply:
-      "Thank you for your wonderful review, Emma! We're so glad you enjoyed the cultural demonstrations and activities. The community members always love sharing their traditions with visitors. We hope the rest of your time in Rwanda was just as memorable!",
   },
 ];

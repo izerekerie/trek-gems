@@ -32,7 +32,16 @@ import {
 import { useTours } from "@/hooks/useTour";
 
 export default function ToursPage() {
-  const { tours, loading, error } = useTours();
+  const {
+    tours,
+    searchQuery,
+    setSearchQuery,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+  } = useTours();
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   return (
@@ -47,7 +56,12 @@ export default function ToursPage() {
 
         <div className="w-full md:w-auto flex gap-2">
           <div className="relative w-full md:w-[300px]">
-            <Input placeholder="Search tours..." className="pr-10" />
+            <Input
+              placeholder="Search tours..."
+              className="pr-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,36 +94,13 @@ export default function ToursPage() {
                   Narrow down your search results
                 </SheetDescription>
               </SheetHeader>
-              <div className="py-4">
-                <MobileFilters />
-              </div>
             </SheetContent>
           </Sheet>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="hidden lg:block">
-          <DesktopFilters />
-        </div>
-
         <div className="lg:col-span-3">
-          <div className="flex justify-between items-center mb-6">
-            <p className="text-muted-foreground">Showing 12 of 36 tours</p>
-            <Select defaultValue="recommended">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recommended">Recommended</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
-                <SelectItem value="popular">Most Popular</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tours.map((tour) => (
               <Card
@@ -161,195 +152,40 @@ export default function ToursPage() {
           </div>
 
           <div className="mt-8 flex justify-center">
-            <Button variant="outline" className="mr-2">
-              Previous
-            </Button>
-            <Button variant="outline" className="mx-1">
-              1
-            </Button>
-            <Button variant="outline" className="mx-1">
-              2
-            </Button>
-            <Button variant="outline" className="mx-1">
-              3
-            </Button>
-            <Button variant="outline" className="ml-2">
-              Next
-            </Button>
+            <div className="mt-8 flex justify-center">
+              <Button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="mr-2 border px-4 py-2 rounded-md disabled:opacity-50"
+              >
+                Previous
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <Button
+                  key={i + 1}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`mx-1 border px-4 py-2 rounded-md ${
+                    currentPage === i + 1
+                      ? " bg-primary text-white"
+                      : "bg-gray-500"
+                  }`}
+                >
+                  {i + 1}
+                </Button>
+              ))}
+              <Button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="ml-2 border px-4 py-2 rounded-md disabled:opacity-50"
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-function DesktopFilters() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="font-medium mb-4">Price Range</h3>
-        <div className="space-y-4">
-          <Slider defaultValue={[0, 500]} min={0} max={1000} step={10} />
-          <div className="flex items-center justify-between">
-            <div className="border rounded-md px-3 py-1">$0</div>
-            <div className="border rounded-md px-3 py-1">$500</div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-medium mb-4">Region</h3>
-        <div className="space-y-2">
-          {regions.map((region) => (
-            <div key={region} className="flex items-center space-x-2">
-              <Checkbox id={`region-${region}`} />
-              <label
-                htmlFor={`region-${region}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {region}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-medium mb-4">Duration</h3>
-        <div className="space-y-2">
-          {durations.map((duration) => (
-            <div key={duration.value} className="flex items-center space-x-2">
-              <Checkbox id={`duration-${duration.value}`} />
-              <label
-                htmlFor={`duration-${duration.value}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {duration.label}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-medium mb-4">Experience Type</h3>
-        <div className="space-y-2">
-          {experienceTypes.map((type) => (
-            <div key={type} className="flex items-center space-x-2">
-              <Checkbox id={`type-${type}`} />
-              <label
-                htmlFor={`type-${type}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {type}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <Button className="w-full">Apply Filters</Button>
-      <Button variant="outline" className="w-full">
-        Reset
-      </Button>
-    </div>
-  );
-}
-
-function MobileFilters() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="font-medium mb-4">Price Range</h3>
-        <div className="space-y-4">
-          <Slider defaultValue={[0, 500]} min={0} max={1000} step={10} />
-          <div className="flex items-center justify-between">
-            <div className="border rounded-md px-3 py-1">$0</div>
-            <div className="border rounded-md px-3 py-1">$500</div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-medium mb-4">Region</h3>
-        <div className="space-y-2">
-          {regions.map((region) => (
-            <div key={region} className="flex items-center space-x-2">
-              <Checkbox id={`mobile-region-${region}`} />
-              <label
-                htmlFor={`mobile-region-${region}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {region}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-medium mb-4">Duration</h3>
-        <div className="space-y-2">
-          {durations.map((duration) => (
-            <div key={duration.value} className="flex items-center space-x-2">
-              <Checkbox id={`mobile-duration-${duration.value}`} />
-              <label
-                htmlFor={`mobile-duration-${duration.value}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {duration.label}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-medium mb-4">Experience Type</h3>
-        <div className="space-y-2">
-          {experienceTypes.map((type) => (
-            <div key={type} className="flex items-center space-x-2">
-              <Checkbox id={`mobile-type-${type}`} />
-              <label
-                htmlFor={`mobile-type-${type}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {type}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <Button className="w-full">Apply Filters</Button>
-      <Button variant="outline" className="w-full">
-        Reset
-      </Button>
-    </div>
-  );
-}
-
-// Sample data
-
-const regions = [
-  "Northern Province",
-  "Southern Province",
-  "Eastern Province",
-  "Western Province",
-  "Kigali",
-];
-
-const durations = [
-  { value: "half-day", label: "Half Day (1-4 hours)" },
-  { value: "full-day", label: "Full Day (5-8 hours)" },
-  { value: "multi-day", label: "Multi-Day (2+ days)" },
-];
-
-const experienceTypes = [
-  "Cultural",
-  "Adventure",
-  "Nature",
-  "Food & Culinary",
-  "Crafts & Artisans",
-  "Community Service",
-];
