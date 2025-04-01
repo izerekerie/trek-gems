@@ -44,14 +44,6 @@ export default function Home() {
                 Explore Tours <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-transparent text-white border-white hover:bg-white/10"
-              asChild
-            >
-              <Link href="/about">Learn More</Link>
-            </Button>
           </div>
         </div>
       </section>
@@ -164,9 +156,6 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <Button className="mt-8 bg-primary hover:bg-primary/90" asChild>
-                <Link href="/impact">Learn About Our Impact</Link>
-              </Button>
             </div>
             <div className="relative h-[400px] rounded-lg overflow-hidden">
               <img

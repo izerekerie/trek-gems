@@ -31,6 +31,8 @@ import { useTours } from "@/hooks/useTour";
 import BookingForm from "@/components/BookingForm";
 import ReviewModal from "@/components/UseReviewModal";
 import { toast } from "@/hooks/use-toast";
+import { formatDate } from "date-fns";
+import { formatDateTime } from "@/lib/formatDate";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -118,6 +120,26 @@ function TravelerDashboard() {
     (sum, trip) => sum + (trip.totalCost || 0),
     0
   );
+  const handleCancel = async (booking) => {
+    try {
+      const updatedBookings = bookings.filter(
+        (trip) => trip?.id !== booking.id
+      );
+      setBookings(updatedBookings);
+      await updateBooking({ ...booking, status: "CANCELED" });
+      toast({
+        title: "Booking Cancelled",
+        description: "Your booking has been cancelled successfully.",
+        variant: "success",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to cancel booking.",
+        description: `${error.message}`,
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -152,7 +174,6 @@ function TravelerDashboard() {
         <TabsList>
           <TabsTrigger value="upcoming">Upcoming Trips</TabsTrigger>
           <TabsTrigger value="past">Past Trips</TabsTrigger>
-          <TabsTrigger value="saved">Saved Tours</TabsTrigger>
         </TabsList>
 
         <TabsContent value="upcoming" className="space-y-4">
@@ -187,12 +208,19 @@ function TravelerDashboard() {
                         <div className="text-sm text-gray-600">{trip.date}</div>
                         <div className="flex items-center mt-1">
                           <Badge
-                            variant={
+                            // variant={
+                            //   trip.status === "CONFIRMED"
+                            //     ? "default"
+                            //     : "outline"
+                            // }
+
+                            className={
                               trip.status === "CONFIRMED"
-                                ? "default"
-                                : "outline"
+                                ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
+                                : trip.status === "CANCELED"
+                                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300"
+                                : "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300"
                             }
-                            className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
                           >
                             {trip.status}
                           </Badge>
@@ -206,27 +234,21 @@ function TravelerDashboard() {
                       <div className="text-sm text-gray-600">
                         {trip.numberOfPeople} guests
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        View Details{" "}
-                      </Button>
+                      {trip.status === "CONFIRMED" && (
+                        <Button
+                          onClick={() => handleCancel(trip)}
+                          variant="outline"
+                          size="sm"
+                          className="mt-2 border-gray-300  bg-yellow-300 text-gray-700 hover:bg-primary/50"
+                        >
+                          Cancel Booking{" "}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
             </CardContent>
-            <CardFooter>
-              <Button
-                variant="outline"
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                asChild
-              >
-                <Link href="/bookings">View All Bookings</Link>
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
 
@@ -287,65 +309,6 @@ function TravelerDashboard() {
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="saved" className="space-y-4">
-          <Card className="border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">
-                Saved Tours
-              </CardTitle>
-              <CardDescription>Tours you've saved for later</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {savedTours.map((tour) => (
-                  <div
-                    key={tour.id}
-                    className="flex items-center border border-gray-200 rounded-md p-3"
-                  >
-                    <div className="w-16 h-16 rounded-md overflow-hidden mr-3">
-                      <img
-                        src={tour.image[0] || "/placeholder.svg"}
-                        alt={tour.title}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">
-                        {tour.title}
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {tour.location}
-                      </div>
-                      <div className="flex items-center mt-1">
-                        <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                        <span className="text-sm">${tour.price}</span>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                      asChild
-                    >
-                      <Link href={`/tours/${tour.id}`}>View</Link>
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                variant="outline"
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                asChild
-              >
-                <Link href="/tours">Explore More Tours</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
       </Tabs>
     </>
   );
@@ -357,7 +320,17 @@ function GuideDashboard() {
   const [editform, setEditForm] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [tours, setTours] = useState([]);
-
+  const totalRevenue = tours.reduce(
+    (acc, tour) => acc + tour.price * tour._count.bookings,
+    0
+  );
+  // Calculate total bookings
+  const totalBookings = bookings.length;
+  // Calculate active tours
+  const activeTours = tours.filter((tour) => tour._count.bookings > 0).length;
+  // Calculate average rating
+  const avgRating =
+    tours.reduce((acc, tour) => acc + tour.avgRating, 0) / tours.length || 0;
   const { user } = useAuth();
   useEffect(() => {
     if (user) {
@@ -371,7 +344,20 @@ function GuideDashboard() {
   }, []);
 
   const handleConfirmBooking = async (booking) => {
-    await updateBooking({ ...booking, status: "CONFIRMED" });
+    try {
+      await updateBooking({ ...booking, status: "CONFIRMED" });
+      toast({
+        title: "Booking Confirmed",
+        description: "Your booking has been confirmed successfully.",
+        variant: "success",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to confirm booking.",
+        description: `${error.message}`,
+        variant: "destructive",
+      });
+    }
   };
   const handleupdate = () => {
     setEditForm(true);
@@ -387,7 +373,9 @@ function GuideDashboard() {
             <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">$12,546</div>
+            <div className="text-2xl font-bold text-gray-900">
+              ${totalRevenue.toFixed(2)}
+            </div>
             <p className="text-xs text-gray-500">+18% from last month</p>
           </CardContent>
         </Card>
@@ -399,7 +387,9 @@ function GuideDashboard() {
             <Calendar className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">243</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {totalBookings}
+            </div>
             <p className="text-xs text-gray-500">+12% from last month</p>
           </CardContent>
         </Card>
@@ -411,7 +401,9 @@ function GuideDashboard() {
             <Package className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">8</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {activeTours}
+            </div>
             <p className="text-xs text-gray-500">+2 new this month</p>
           </CardContent>
         </Card>
@@ -423,14 +415,14 @@ function GuideDashboard() {
             <Star className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">4.8</div>
-            <p className="text-xs text-gray-500">Based on 156 reviews</p>
+            <div className="text-2xl font-bold text-gray-900">
+              {avgRating.toFixed(1)}
+            </div>
           </CardContent>
         </Card>
       </div>
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tours">Tours</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
@@ -567,18 +559,19 @@ function GuideDashboard() {
                     <div className="flex items-center">
                       <Avatar className="h-10 w-10 mr-3">
                         <AvatarFallback>
-                          {booking.tour.title.charAt(0)}
+                          {booking?.tour.title.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {booking.tour.title}
+                          {booking?.tour.title}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {booking.tour.description}
+                          {booking?.tour.description}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {booking.date}, {booking.numberOfPeople} guests
+                          {formatDateTime(booking.date)},{" "}
+                          {booking?.numberOfPeople} guests
                         </div>
                       </div>
                     </div>
@@ -587,29 +580,26 @@ function GuideDashboard() {
                         ${booking.totalCost}
                       </div>
                       <Badge
-                        variant={
-                          booking.status === "CONFIRMED"
-                            ? "default"
-                            : booking.status === "PENDING"
-                            ? "secondary"
-                            : "destructive"
-                        }
+                        // variant={
+                        //   booking.status === "CONFIRMED"
+                        //     ? "default"
+                        //     : booking.status === "PENDING"
+                        //     ? "secondary"
+                        //     : "destructive"
+                        // }
                         className={
-                          booking.status === "CONFIRMED"
+                          booking?.status === "CONFIRMED"
                             ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
-                            : ""
+                            : booking?.status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300"
+                            : booking?.status === "CANCELED"
+                            ? "bg-red-100 text-red-800 hover:bg-red-200 border-red-300"
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300"
                         }
                       >
                         {booking.status}
                       </Badge>
                       <div className="flex gap-2 mt-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                        >
-                          Details
-                        </Button>
                         {booking.status === "PENDING" && (
                           <Button
                             size="sm"
@@ -692,259 +682,3 @@ function GuideDashboard() {
     </>
   );
 }
-
-// Sample data for traveler dashboard
-const upcomingTrips = [
-  {
-    id: 1,
-    tour: "Lake Burera Cultural Experience",
-    date: "June 15, 2023",
-    status: "Confirmed",
-    amount: 178,
-    guests: 2,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 2,
-    tour: "Nyungwe Forest Canopy Walk",
-    date: "July 3, 2023",
-    status: "Pending",
-    amount: 240,
-    guests: 2,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-];
-
-const pastTrips = [
-  {
-    id: 1,
-    tour: "Iby'Iwacu Cultural Village",
-    date: "May 10, 2023",
-    amount: 150,
-    reviewed: true,
-    rating: 5,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 2,
-    tour: "Lake Kivu Fishing Experience",
-    date: "April 22, 2023",
-    amount: 130,
-    reviewed: true,
-    rating: 4,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 3,
-    tour: "Traditional Pottery Workshop",
-    date: "March 15, 2023",
-    amount: 45,
-    reviewed: false,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-];
-
-const savedTours = [
-  {
-    id: 1,
-    title: "Gishwati-Mukura National Park Trek",
-    location: "Western Province",
-    price: 95,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 2,
-    title: "Traditional Pottery Workshop",
-    location: "Eastern Province",
-    price: 45,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 3,
-    title: "Lake Kivu Fishing Experience",
-    location: "Western Province",
-    price: 65,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 4,
-    title: "Akagera Wildlife Safari",
-    location: "Eastern Province",
-    price: 150,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-];
-
-// Sample data for guide dashboard
-const recentBookings = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    avatar: "/placeholder.svg?height=36&width=36",
-    tour: "Lake Burera Cultural Experience",
-    amount: 178,
-    date: "Today, 2:30 PM",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    avatar: "/placeholder.svg?height=36&width=36",
-    tour: "Nyungwe Forest Canopy Walk",
-    amount: 240,
-    date: "Yesterday, 10:15 AM",
-  },
-  {
-    id: 3,
-    name: "Emma Wilson",
-    avatar: "/placeholder.svg?height=36&width=36",
-    tour: "Iby'Iwacu Cultural Village",
-    amount: 150,
-    date: "May 15, 9:45 AM",
-  },
-  {
-    id: 4,
-    name: "David Kim",
-    avatar: "/placeholder.svg?height=36&width=36",
-    tour: "Lake Burera Cultural Experience",
-    amount: 178,
-    date: "May 14, 3:20 PM",
-  },
-];
-
-const popularTours = [
-  {
-    id: 1,
-    title: "Lake Burera Cultural Experience",
-    location: "Northern Province",
-    rating: 4.8,
-    bookings: 124,
-    image: "/placeholder.svg?height=48&width=48",
-  },
-  {
-    id: 2,
-    title: "Nyungwe Forest Canopy Walk",
-    location: "Western Province",
-    rating: 4.9,
-    bookings: 98,
-    image: "/placeholder.svg?height=48&width=48",
-  },
-  {
-    id: 3,
-    title: "Iby'Iwacu Cultural Village",
-    location: "Northern Province",
-    rating: 4.7,
-    bookings: 86,
-    image: "/placeholder.svg?height=48&width=48",
-  },
-];
-
-const upcomingCheckins = [
-  {
-    id: 1,
-    tour: "Lake Burera Cultural Experience",
-    tourImage: "/placeholder.svg?height=48&width=48",
-    date: "Today",
-    time: "10:00 AM",
-    guestName: "Sarah Johnson",
-    guests: 2,
-    status: "Confirmed",
-  },
-  {
-    id: 2,
-    tour: "Nyungwe Forest Canopy Walk",
-    tourImage: "/placeholder.svg?height=48&width=48",
-    date: "Tomorrow",
-    time: "9:30 AM",
-    guestName: "Michael Chen",
-    guests: 4,
-    status: "Confirmed",
-  },
-  {
-    id: 3,
-    tour: "Iby'Iwacu Cultural Village",
-    tourImage: "/placeholder.svg?height=48&width=48",
-    date: "May 18",
-    time: "11:00 AM",
-    guestName: "Emma Wilson",
-    guests: 3,
-    status: "Pending",
-  },
-];
-
-const operatorTours = [
-  {
-    id: 1,
-    title: "Lake Burera Cultural Experience",
-    location: "Northern Province",
-    price: 89,
-    status: "Active",
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 2,
-    title: "Nyungwe Forest Canopy Walk",
-    location: "Western Province",
-    price: 120,
-    status: "Active",
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 3,
-    title: "Iby'Iwacu Cultural Village",
-    location: "Northern Province",
-    price: 75,
-    status: "Active",
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 4,
-    title: "Gishwati-Mukura National Park Trek",
-    location: "Western Province",
-    price: 95,
-    status: "Draft",
-    image: "/placeholder.svg?height=64&width=64",
-  },
-];
-
-const allBookings = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    tour: "Lake Burera Cultural Experience",
-    date: "Today, 10:00 AM",
-    guests: 2,
-    amount: 178,
-    status: "Confirmed",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    avatar: "/placeholder.svg?height=40&width=40",
-    tour: "Nyungwe Forest Canopy Walk",
-    date: "Tomorrow, 9:30 AM",
-    guests: 4,
-    amount: 480,
-    status: "Confirmed",
-  },
-  {
-    id: 3,
-    name: "Emma Wilson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    tour: "Iby'Iwacu Cultural Village",
-    date: "May 18, 11:00 AM",
-    guests: 3,
-    amount: 225,
-    status: "Pending",
-  },
-  {
-    id: 4,
-    name: "David Kim",
-    avatar: "/placeholder.svg?height=40&width=40",
-    tour: "Lake Burera Cultural Experience",
-    date: "May 20, 10:00 AM",
-    guests: 2,
-    amount: 178,
-    status: "Cancelled",
-  },
-];
