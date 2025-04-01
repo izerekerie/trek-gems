@@ -24,8 +24,11 @@ export const useTours = (initialFilters = {}) => {
     limit: 10,
     totalPages: 0,
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2;
   const [filters, setFilters] = useState(initialFilters);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
   const fetchTours = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -46,7 +49,28 @@ export const useTours = (initialFilters = {}) => {
   useEffect(() => {
     fetchTours();
   }, [fetchTours]);
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredTours(tours);
+    } else {
+      setFilteredTours(
+        tours.filter(
+          (tour) =>
+            tour.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            tour.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            tour.location.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+  }, [searchQuery, tours]);
 
+  const totalPages = Math.ceil(filteredTours.length / itemsPerPage);
+  const paginatedTours = filteredTours.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
   // Update filters
   const updateFilters = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
@@ -158,8 +182,22 @@ export const useTours = (initialFilters = {}) => {
 
     try {
       const tour = await tourAPI.getToursByOwner(id);
-      console.log("tour in api", tour);
       return tour; // Return the fetched tour data
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to fetch tour");
+      console.error("Error fetching tour:", err);
+      return null; // Return null if there's an error
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getBookingsByTour = async (id: string): Promise<Tour | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const bookings = await tourAPI.getBookingsByTour(id);
+
+      return bookings; // Return the fetched tour data
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to fetch tour");
       console.error("Error fetching tour:", err);
@@ -170,14 +208,20 @@ export const useTours = (initialFilters = {}) => {
   };
 
   return {
-    tours,
+    tours: paginatedTours,
     loading,
     error,
     meta,
     filters,
     updateFilters,
     changePage,
+    setSearchQuery,
+    searchQuery,
+    currentPage,
+    totalPages,
+    setCurrentPage,
     createTour,
+    getBookingsByTour,
     updateTour,
     getTour,
     getToursByOwner,

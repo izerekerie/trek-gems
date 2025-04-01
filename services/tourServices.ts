@@ -11,7 +11,10 @@ export const tourAPI = {
     const response = await apiClient.get(`/tours/user/${ownerId}`);
     return response.data;
   },
-
+  getBookingsByTour: async (tourId: string) => {
+    const response = await apiClient.get(`/tours/bookings/${tourId}`);
+    return response.data;
+  },
   // Get a single tour by ID
   getTour: async (id) => {
     const response = await apiClient.get(`/tours/${id}`);
