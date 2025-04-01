@@ -1,9 +1,14 @@
 import apiClient from "./api";
 
 export const reviewAPI = {
-  // Create a new booking
+  // Create a new review
   createReview: async (review: any) => {
     const response = await apiClient.post("/reviews", review);
+    return response.data;
+  },
+
+  updateReview: async (id: string, review: any) => {
+    const response = await apiClient.post(`/reviews/${id}`, review);
     return response.data;
   },
 
