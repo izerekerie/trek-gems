@@ -116,14 +116,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setError(null);
 
       const response = await apiclient.post("/auth/login", { email, password });
-      const { user, token } = response.data;
+      const { user, access_token } = response.data;
 
       // Save auth state
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
-
       setUser(user);
-      setToken(token);
+      setToken(access_token);
     } catch (err: any) {
       setError(err.response?.data?.message[0] || "Login failed");
       throw err;

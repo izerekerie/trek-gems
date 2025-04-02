@@ -165,7 +165,9 @@ function TravelerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">${totalCost}</div>
-            <p className="text-xs text-gray-500">Across 5 bookings</p>
+            <p className="text-xs text-gray-500">
+              Across {bookings?.length || 0} bookings
+            </p>
           </CardContent>
         </Card>
       </div>

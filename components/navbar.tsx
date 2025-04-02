@@ -20,9 +20,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Tours", href: "/tours" },
-  { name: "About", href: "/about" },
-  { name: "Impact", href: "/impact" },
-  { name: "Contact", href: "/contact" },
+  { name: "About", href: "/" },
+  { name: "Impact", href: "/" },
+  { name: "Contact", href: "/" },
 ];
 
 const languages = [
