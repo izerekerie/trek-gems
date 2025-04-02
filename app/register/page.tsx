@@ -12,14 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/lib/auth-context";
-import { User } from "next-auth";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 type UserRole = "TRAVELER" | "OPERATOR";
 export default function Register() {
   const router = useRouter();
-  const { toast } = useToast();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -47,6 +45,7 @@ export default function Register() {
     setFormError("");
     if (formData.password !== formData.confirmPassword) {
       setFormError("Passwords do not match");
+
       return;
     }
 
@@ -58,6 +57,10 @@ export default function Register() {
 
       formData.role
     );
+    toast({
+      title: "Account created successfully",
+      description: "You can now log in to your account",
+    });
     router.push("/login");
   };
   return (
@@ -157,7 +160,7 @@ export default function Register() {
             <div className="relative">
               <Input
                 id="confirmPassword"
-                type={showConfirmPassword ? "text" : "confirmPassword"}
+                type={showConfirmPassword ? "text" : "password"}
                 required
                 className="border-gray-300"
                 value={formData.confirmPassword}
@@ -212,7 +215,7 @@ export default function Register() {
 
         <Separator className="my-8" />
 
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <Button
             variant="outline"
             className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -237,7 +240,7 @@ export default function Register() {
               Login
             </Link>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

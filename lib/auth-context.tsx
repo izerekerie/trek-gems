@@ -53,11 +53,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const storedUser = localStorage.getItem("user");
 
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      apiclient.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${storedToken}`;
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setToken(storedToken);
+        setUser(parsedUser);
+        apiclient.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${storedToken}`;
+      } catch (error) {
+        console.error("Error parsing storedUser:", error);
+        localStorage.removeItem("user"); // Remove corrupted data
+      }
     }
     setLoading(false);
   }, []);
