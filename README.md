@@ -30,8 +30,8 @@ A modern tourism booking platform built with Next.js, providing an intuitive int
 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/tourism-booking-system.git
-cd tourism-booking-system/frontend
+git clone https://github.com/izerekerie/trek-gems.git
+cd trek-gems
 ```
 
 2. Install dependencies
