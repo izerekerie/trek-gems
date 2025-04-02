@@ -37,8 +37,8 @@ import { formatDateTime } from "@/lib/formatDate";
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { getBookingsByOperator, getBookingByUser } = useBooking();
   const [tourForm, setIsTourFormOPen] = useState(false);
+  const [refreshTours, setRefreshTours] = useState(false);
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!user) {
@@ -81,11 +81,16 @@ export default function Dashboard() {
         )}
       </div>
 
-      {user.role === "TRAVELER" ? <TravelerDashboard /> : <GuideDashboard />}
+      {user.role === "TRAVELER" ? (
+        <TravelerDashboard />
+      ) : (
+        <GuideDashboard refreshTours={refreshTours} />
+      )}
       <TourModal
         isOpen={tourForm}
         onClose={() => {
           setIsTourFormOPen(false);
+          setRefreshTours((prev) => !prev);
         }}
         tour={null}
       />
@@ -316,7 +321,7 @@ function TravelerDashboard() {
   );
 }
 
-function GuideDashboard() {
+function GuideDashboard({ refreshTours }: { refreshTours: boolean }) {
   const { getToursByOwner } = useTours();
   const { getBookingsByOperator, updateBooking } = useBooking();
   const [editform, setEditForm] = useState(false);
@@ -343,7 +348,7 @@ function GuideDashboard() {
         setTours(data);
       });
     }
-  }, []);
+  }, [refreshTours]);
 
   const handleConfirmBooking = async (booking) => {
     try {
