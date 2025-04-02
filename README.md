@@ -6,7 +6,7 @@
 
 A modern tourism booking platform built with Next.js, providing an intuitive interface for users to browse, search and book tourism experiences.
 
-![Tourism Booking Frontend](https://via.placeholder.com/800x400?text=Tourism+Booking+Frontend)
+![Tourism Booking Frontend](https://main--trek-gems.netlify.app/)
 
 ## ✨ Features
 
@@ -30,8 +30,8 @@ A modern tourism booking platform built with Next.js, providing an intuitive int
 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/tourism-booking-system.git
-cd tourism-booking-system/frontend
+git clone https://github.com/izerekerie/trek-gems.git
+cd trek-gems
 ```
 
 2. Install dependencies
@@ -117,8 +117,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📞 Contact
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter) - email@example.com
-
-Project Link: [https://github.com/yourusername/tourism-booking-system](https://github.com/yourusername/tourism-booking-system)
