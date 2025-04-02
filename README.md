@@ -6,7 +6,7 @@
 
 A modern tourism booking platform built with Next.js, providing an intuitive interface for users to browse, search and book tourism experiences.
 
-![Tourism Booking Frontend](https://via.placeholder.com/800x400?text=Tourism+Booking+Frontend)
+![Tourism Booking Frontend](https://main--trek-gems.netlify.app/)
 
 ## ✨ Features
 
