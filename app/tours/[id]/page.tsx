@@ -183,8 +183,6 @@ export default function TourDetailPage() {
         <Tabs defaultValue="description">
           <TabsList className="grid grid-cols-4 mb-8">
             <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
-            <TabsTrigger value="impact">Impact</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
 
@@ -192,102 +190,6 @@ export default function TourDetailPage() {
             <div>
               <h2 className="text-xl font-semibold mb-4">About This Tour</h2>
               <p className="text-muted-foreground mb-6">{tour.description}</p>
-
-              <h3 className="text-lg font-semibold mb-3">Highlights</h3>
-              <ul className="space-y-2 mb-6">
-                {/* {tour.highlights.map((highlight, index) => (
-                    <li key={index} className="flex items-start">
-                      <div className="mr-2 mt-1 bg-primary/10 p-1 rounded-full">
-                        <Star className="h-4 w-4 text-primary" />
-                      </div>
-                      <span>{highlight}</span>
-                    </li>
-                  ))} */}
-              </ul>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">
-                    What's Included
-                  </h3>
-                  <ul className="space-y-2">
-                    {/* {tour.included.map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <div className="mr-2 mt-1 text-green-500">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-check"
-                          >
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </div>
-                        <span>{item}</span>
-                      </li>
-                    ))} */}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Not Included</h3>
-                  {/* <ul className="space-y-2">
-                      {tour.notIncluded.map((item, index) => (
-                        <li key={index} className="flex items-start">
-                          <div className="mr-2 mt-1 text-red-500">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="lucide lucide-x"
-                            >
-                              <line x1="18" y1="6" x2="6" y2="18" />
-                              <line x1="6" y1="6" x2="18" y2="18" />
-                            </svg>
-                          </div>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul> */}
-                </div>
-              </div>
-
-              <h3 className="text-lg font-semibold mb-3">Languages</h3>
-              <div className="flex flex-wrap gap-2 mb-6"></div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="itinerary" className="space-y-6">
-            <h2 className="text-xl font-semibold mb-4">Tour Itinerary</h2>
-            <div className="space-y-4">
-              {/* {tour.itinerary.map((item, index) => (
-                  <div key={index} className="flex">
-                    <div className="mr-4 relative">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Clock className="h-5 w-5 text-primary" />
-                      </div>
-                      {index < tour.itinerary.length - 1 && (
-                        <div className="absolute top-10 bottom-0 left-1/2 w-0.5 -translate-x-1/2 bg-border h-full" />
-                      )}
-                    </div>
-                    <div className="pb-6">
-                      <h3 className="font-medium">{item.time}</h3>
-                      <p className="text-muted-foreground">{item.activity}</p>
-                    </div>
-                  </div>
-                ))} */}
             </div>
           </TabsContent>
 
@@ -322,12 +224,6 @@ export default function TourDetailPage() {
           </TabsContent>
 
           <TabsContent value="reviews" className="space-y-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Reviews</h2>
-
-              <Button>Write a Review</Button>
-            </div>
-
             <div className="space-y-6">
               {tour?.reviews.map((review, index) => (
                 <div key={index} className="border-b pb-6 last:border-0">

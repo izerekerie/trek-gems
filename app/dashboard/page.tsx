@@ -212,7 +212,9 @@ function TravelerDashboard() {
                         <div className="font-medium text-gray-900">
                           {trip.tour.title}
                         </div>
-                        <div className="text-sm text-gray-600">{trip.date}</div>
+                        <div className="text-sm text-gray-600">
+                          {formatDateTime(trip.date)}
+                        </div>
                         <div className="flex items-center mt-1">
                           <Badge
                             // variant={
